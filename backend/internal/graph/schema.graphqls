@@ -1,0 +1,61 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+# User Types
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  books: [Book!]!
+}
+
+# Book Types
+type Book {
+  id: ID!
+  title: String!
+  author: String!
+  publishedAt: String
+  inputs: [Input!]!
+}
+
+# Input Types
+type Input {
+  id: ID!
+  bookId: ID!
+  content: String!
+  outputs: [Output!]!
+}
+
+# Output Types
+type Output {
+  id: ID!
+  inputId: ID!
+  action: String!
+}
+
+# Query and Mutation
+type Query {
+  users: [User!]!
+  user(id: ID!): User
+  books: [Book!]!
+  book(id: ID!): Book
+}
+
+type Mutation {
+  createUser(username: String!, email: String!): User!
+  createBook(title: String!, author: String!, publishedAt: String): Book!
+}
+
+# Common Types
+type Error {
+  code: Int!
+  message: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
