@@ -1,38 +1,32 @@
-package main
+package server
 
 import (
+	"book-action/internal/dynamodb"
 	"book-action/internal/graph"
 	"book-action/internal/graph/generated"
+	"book-action/internal/usecase/user"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	// DynamoDBUserRepositoryのインスタンスを生成
+	userRepo := dynamodb.NewDynamoDBUserRepository()
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	// 他の依存関係をセットアップ
+	userUsecase := usecase.NewUserInteractor(userRepo)
+	resolver := graph.NewResolver(userUsecase)
 
+	// GraphQLサーバーの設定
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+
+	// サーバーの起動
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, logRequest(http.DefaultServeMux)))
-}
-
-// logRequest is a middleware that logs HTTP requests.
-func logRequest(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Request started: %s %s", r.Method, r.URL.Path)
-		next.ServeHTTP(w, r)
-		log.Printf("Request finished: %s %s", r.Method, r.URL.Path)
-	})
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
