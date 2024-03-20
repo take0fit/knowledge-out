@@ -29,7 +29,6 @@ func main() {
 						SigningRegion: region,
 					}, nil
 				}
-				// カスタムエンドポイントが指定されていない場合、デフォルトの解決方法を使用
 				return aws.Endpoint{}, &aws.EndpointNotFoundError{}
 			},
 		)),
@@ -40,58 +39,25 @@ func main() {
 
 	svc := dynamodb.NewFromConfig(cfg)
 
-	tableName := "UserEntities"
+	tableName := "MyDataModel"
 	_, err = svc.CreateTable(context.TODO(), &dynamodb.CreateTableInput{
 		TableName: &tableName,
 		KeySchema: []types.KeySchemaElement{
-			{AttributeName: aws.String("UserID"), KeyType: types.KeyTypeHash},                // パーティションキー
-			{AttributeName: aws.String("EntityType#CreatedAt"), KeyType: types.KeyTypeRange}, // ソートキー
+			{AttributeName: aws.String("Id"), KeyType: types.KeyTypeHash},        // パーティションキー
+			{AttributeName: aws.String("DataType"), KeyType: types.KeyTypeRange}, // ソートキー
 		},
 		AttributeDefinitions: []types.AttributeDefinition{
-			{AttributeName: aws.String("UserID"), AttributeType: types.ScalarAttributeTypeS},
-			{AttributeName: aws.String("EntityType#CreatedAt"), AttributeType: types.ScalarAttributeTypeS},
-			// LSI用の属性定義
-			{AttributeName: aws.String("ResourceID"), AttributeType: types.ScalarAttributeTypeS},
-			{AttributeName: aws.String("InputID"), AttributeType: types.ScalarAttributeTypeS},
-			{AttributeName: aws.String("OutputID"), AttributeType: types.ScalarAttributeTypeS},
-			{AttributeName: aws.String("Age#JobId"), AttributeType: types.ScalarAttributeTypeS},
+			{AttributeName: aws.String("Id"), AttributeType: types.ScalarAttributeTypeS},
+			{AttributeName: aws.String("DataType"), AttributeType: types.ScalarAttributeTypeS},
+			{AttributeName: aws.String("DataValue"), AttributeType: types.ScalarAttributeTypeS}, // 追加の属性
 		},
-		LocalSecondaryIndexes: []types.LocalSecondaryIndex{
+		// GSI1の定義 (DataValueを基にしたクエリをサポートするため)
+		GlobalSecondaryIndexes: []types.GlobalSecondaryIndex{
 			{
-				IndexName: aws.String("ResourceIDIndex"),
+				IndexName: aws.String("DataValueIndex"),
 				KeySchema: []types.KeySchemaElement{
-					{AttributeName: aws.String("UserID"), KeyType: types.KeyTypeHash},
-					{AttributeName: aws.String("ResourceID"), KeyType: types.KeyTypeRange},
-				},
-				Projection: &types.Projection{
-					ProjectionType: types.ProjectionTypeAll,
-				},
-			},
-			{
-				IndexName: aws.String("InputIDIndex"),
-				KeySchema: []types.KeySchemaElement{
-					{AttributeName: aws.String("UserID"), KeyType: types.KeyTypeHash},
-					{AttributeName: aws.String("InputID"), KeyType: types.KeyTypeRange},
-				},
-				Projection: &types.Projection{
-					ProjectionType: types.ProjectionTypeAll,
-				},
-			},
-			{
-				IndexName: aws.String("OutputIDIndex"),
-				KeySchema: []types.KeySchemaElement{
-					{AttributeName: aws.String("UserID"), KeyType: types.KeyTypeHash},
-					{AttributeName: aws.String("OutputID"), KeyType: types.KeyTypeRange},
-				},
-				Projection: &types.Projection{
-					ProjectionType: types.ProjectionTypeAll,
-				},
-			},
-			{
-				IndexName: aws.String("AgeJobIdIndex"),
-				KeySchema: []types.KeySchemaElement{
-					{AttributeName: aws.String("UserID"), KeyType: types.KeyTypeHash},
-					{AttributeName: aws.String("Age#JobId"), KeyType: types.KeyTypeRange},
+					{AttributeName: aws.String("DataValue"), KeyType: types.KeyTypeHash},
+					{AttributeName: aws.String("Id"), KeyType: types.KeyTypeRange},
 				},
 				Projection: &types.Projection{
 					ProjectionType: types.ProjectionTypeAll,

@@ -45,7 +45,7 @@ type Query {
 
 type Mutation {
   createUser(username: String!, email: String!): User!
-  createResource(title: String!, categoryId: String!, author: String!): Resource!
+  createResource(title: String!, categoryId: String!): Resource!
 }
 
 # Common Types
