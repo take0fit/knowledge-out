@@ -4,7 +4,7 @@ services:
     build:
       context: ./backend
     volumes:
-      - ./backend:/app/docker
+      - ./backend:/api-server/docker
     ports:
       - "8080:8080"
     depends_on:

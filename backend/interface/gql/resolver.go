@@ -1,7 +1,7 @@
-package graph
+package gql
 
 import (
-	"book-action/internal/graph/model"
+	"book-action/interface/gql/model"
 	"book-action/internal/usecase/user"
 	"context"
 )

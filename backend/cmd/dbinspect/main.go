@@ -40,7 +40,7 @@ func main() {
 	svc := dynamodb.NewFromConfig(cfg)
 
 	result, err := svc.DescribeTable(context.TODO(), &dynamodb.DescribeTableInput{
-		TableName: aws.String("UserEntities"),
+		TableName: aws.String("MyDataModel"),
 	})
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

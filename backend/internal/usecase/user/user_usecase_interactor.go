@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"book-action/internal/graph/model"
-	"book-action/internal/repository"
+	"book-action/interface/gql/model"
+	"book-action/internal/domain/repository"
 )
 
 type UserUseCaseInteractor struct {

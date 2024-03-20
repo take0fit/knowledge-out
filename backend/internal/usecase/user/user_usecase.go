@@ -1,6 +1,8 @@
 package usecase
 
-import "book-action/internal/graph/model"
+import (
+	"book-action/interface/gql/model"
+)
 
 type UserUsecase interface {
 	GetUserWithDetails(id string) (*model.User, error)

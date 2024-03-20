@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"book-action/internal/graph/model"
+	"book-action/interface/gql/model"
 )
 
 type UserRepository interface {

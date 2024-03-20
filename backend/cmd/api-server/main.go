@@ -1,9 +1,9 @@
 package server
 
 import (
-	"book-action/internal/dynamodb"
-	"book-action/internal/graph"
-	"book-action/internal/graph/generated"
+	"book-action/interface/gql"
+	"book-action/interface/gql/generated"
+	"book-action/internal/infrastructure/db/dynamodb"
 	"book-action/internal/usecase/user"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ func main() {
 
 	// 他の依存関係をセットアップ
 	userUsecase := usecase.NewUserInteractor(userRepo)
-	resolver := graph.NewResolver(userUsecase)
+	resolver := gql.NewResolver(userUsecase)
 
 	// GraphQLサーバーの設定
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))

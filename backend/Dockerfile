@@ -11,7 +11,7 @@ COPY . .
 
 # スタティックバイナリをビルド
 ENV CGO_ENABLED=0
-RUN go build -o main ./cmd/app/main.go
+RUN go build -o main ./cmd/api-server/main.go
 
 # 実行ステージ
 FROM alpine:3.15

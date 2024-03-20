@@ -1,8 +1,8 @@
 package dynamodb
 
 import (
-	"book-action/internal/graph/model"
-	"book-action/internal/repository"
+	"book-action/interface/gql/model"
+	"book-action/internal/domain/repository"
 	"fmt"
 	"os"
 
