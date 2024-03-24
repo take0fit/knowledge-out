@@ -6,6 +6,6 @@ import (
 
 type UserUsecase interface {
 	GetUserWithDetails(id string) (*model.User, error)
-	//CreateUser(username, email string) (*model.User, error)
+	CreateUser() (*model.User, error)
 	//GetAllUsers() ([]*model.User, error)
 }

@@ -12,9 +12,13 @@ import (
 
 func main() {
 	endpoint := os.Getenv("DYNAMODB_ENDPOINT")
+	if endpoint == "" {
+		panic("DYNAMODB_ENDPOINT is unset")
+	}
+
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
-		region = "us-west-2" // デフォルトのリージョン設定
+		panic("AWS_REGION is unset")
 	}
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
@@ -22,14 +26,11 @@ func main() {
 		// カスタムエンドポイントの設定
 		config.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
 			func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-				if endpoint != "" {
-					return aws.Endpoint{
-						PartitionID:   "aws",
-						URL:           endpoint,
-						SigningRegion: region,
-					}, nil
-				}
-				return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+				return aws.Endpoint{
+					PartitionID:   "aws",
+					URL:           endpoint,
+					SigningRegion: region,
+				}, nil
 			},
 		)),
 	)

@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"book-action/interface/gql/model"
+	"book-action/internal/domain/model"
 )
 
 type UserRepository interface {
-	GetUserWithDetails(userID string) (*model.User, error)
+	GetUserDetails(userID string) (*model.User, error)
+	CreateUser(*model.User) error
 }

@@ -6,6 +6,7 @@
 type User {
   id: ID!
   name: String!
+  age: Int!
   resources: [Resource!]!
 }
 
@@ -46,7 +47,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(username: String!, email: String!): User!
+  createUser(username: String!, age: Int!): User!
   createResource(title: String!, categoryId: String!): Resource!
 }
 

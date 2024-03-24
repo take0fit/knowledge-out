@@ -1,61 +1,73 @@
 package dynamodb
 
 import (
-	"book-action/interface/gql/model"
+	"book-action/internal/domain/model"
 	"book-action/internal/domain/repository"
+	"context"
 	"fmt"
-	"os"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"strconv"
 )
 
-type DynamoDBUserRepository struct {
-	client *dynamodb.DynamoDB
+type DynamoUserRepository struct {
+	client *dynamodb.Client
 }
 
-func NewDynamoDBUserRepository() repository.UserRepository {
-	// 環境変数から設定を取得
-	endpoint := os.Getenv("DYNAMODB_ENDPOINT")
-	region := os.Getenv("AWS_REGION")
-
-	// カスタムセッションの作成
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region:   aws.String(region),
-		Endpoint: aws.String(endpoint),
-	}))
-
-	return &DynamoDBUserRepository{
-		client: dynamodb.New(sess),
+func NewDynamoUserRepository(client *dynamodb.Client) repository.UserRepository {
+	return &DynamoUserRepository{
+		client: client,
 	}
 }
 
-func (r *DynamoDBUserRepository) GetUserWithDetails(userID string) (*model.User, error) {
-	// DynamoDBからユーザー情報を取得するロジックを実装します。
-	// この例ではシンプルな取得方法を示しますが、実際にはユーザー、書籍、入力、出力データを結合して取得する必要があります。
+func (r *DynamoUserRepository) GetUserDetails(userID string) (*model.User, error) {
+	dataType := "userInfo"
 
-	// 仮の実装例
-	result, err := r.client.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("YourTableName"),
-		Key: map[string]*dynamodb.AttributeValue{
-			"UserID": {
-				S: aws.String(userID),
-			},
+	// DynamoDBからデータを取得
+	result, err := r.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
+		TableName: aws.String("MyDataModel"),
+		Key: map[string]types.AttributeValue{
+			"Id":       &types.AttributeValueMemberS{Value: userID},
+			"DataType": &types.AttributeValueMemberS{Value: dataType},
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user from DynamoDB: %w", err)
+		panic(fmt.Errorf("failed to get item from DynamoDB, %w", err))
 	}
 
 	var user model.User
-	err = dynamodbattribute.UnmarshalMap(result.Item, &user)
+	err = attributevalue.UnmarshalMap(result.Item, &user)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal DynamoDB result to user: %w", err)
+		panic(fmt.Errorf("failed to unmarshal result item, %w", err))
 	}
 
-	// ここで関連する書籍、入力、出力データを取得し、userオブジェクトに追加します。
-
 	return &user, nil
+}
+
+func (r *DynamoUserRepository) CreateUser(user *model.User) error {
+	tableName := "MyDataModel"
+
+	nameItem := map[string]types.AttributeValue{
+		"Id":        &types.AttributeValueMemberS{Value: user.ID},
+		"DataType":  &types.AttributeValueMemberS{Value: "UserName"},
+		"DataValue": &types.AttributeValueMemberS{Value: user.Name},
+		"userName":  &types.AttributeValueMemberS{Value: user.Name},
+		"Age":       &types.AttributeValueMemberN{Value: strconv.Itoa(user.Age)},
+	}
+
+	_, err := r.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		TableName: aws.String(tableName),
+		Item:      nameItem,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to put item into DynamoDB: %w", err)
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to put item into DynamoDB: %w", err)
+	}
+
+	return nil
 }

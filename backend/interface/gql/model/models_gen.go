@@ -48,5 +48,6 @@ type Resource struct {
 type User struct {
 	ID        string      `json:"id"`
 	Name      string      `json:"name"`
+	Age       int         `json:"age"`
 	Resources []*Resource `json:"resources"`
 }

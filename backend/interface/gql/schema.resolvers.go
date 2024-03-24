@@ -7,13 +7,30 @@ package gql
 import (
 	"book-action/interface/gql/generated"
 	"book-action/interface/gql/model"
+	"book-action/internal/application/dto"
 	"context"
 	"fmt"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, username string, email string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+func (r *mutationResolver) CreateUser(ctx context.Context, username string, age int) (*model.User, error) {
+	inputUser := dto.UserCreateInput{
+		Name: username,
+		Age:  age,
+	}
+	user, err := r.userUsecase.CreateUser(ctx, inputUser)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+	fmt.Println(3, user)
+	gqlUser := &model.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Age:       user.Age,
+		Resources: nil,
+	}
+
+	return gqlUser, err
 }
 
 // CreateResource is the resolver for the createResource field.
@@ -28,7 +45,15 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	user, err := r.userUsecase.GetUserDetails(id)
+
+	gqlUser := &model.User{
+		ID:        user.ID,
+		Name:      user.Name,
+		Resources: nil,
+	}
+
+	return gqlUser, err
 }
 
 // Resources is the resolver for the resources field.

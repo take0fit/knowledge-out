@@ -1,6 +1,7 @@
 package model
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   string `dynamodbav:"Id"`
+	Name string `dynamodbav:"Name"`
+	Age  int    `dynamodbav:"Age"`
 }

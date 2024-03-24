@@ -62,7 +62,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateResource func(childComplexity int, title string, categoryID string) int
-		CreateUser     func(childComplexity int, username string, email string) int
+		CreateUser     func(childComplexity int, username string, age int) int
 	}
 
 	Output struct {
@@ -96,6 +96,7 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
+		Age       func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
 		Resources func(childComplexity int) int
@@ -103,7 +104,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateUser(ctx context.Context, username string, email string) (*model.User, error)
+	CreateUser(ctx context.Context, username string, age int) (*model.User, error)
 	CreateResource(ctx context.Context, title string, categoryID string) (*model.Resource, error)
 }
 type QueryResolver interface {
@@ -210,7 +211,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["username"].(string), args["email"].(string)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["username"].(string), args["age"].(int)), true
 
 	case "Output.categoryId":
 		if e.complexity.Output.CategoryID == nil {
@@ -348,6 +349,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Resource.UserID(childComplexity), true
 
+	case "User.age":
+		if e.complexity.User.Age == nil {
+			break
+		}
+
+		return e.complexity.User.Age(childComplexity), true
+
 	case "User.id":
 		if e.complexity.User.ID == nil {
 			break
@@ -481,6 +489,7 @@ var sources = []*ast.Source{
 type User {
   id: ID!
   name: String!
+  age: Int!
   resources: [Resource!]!
 }
 
@@ -521,7 +530,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(username: String!, email: String!): User!
+  createUser(username: String!, age: Int!): User!
   createResource(title: String!, categoryId: String!): Resource!
 }
 
@@ -581,15 +590,15 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 		}
 	}
 	args["username"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["email"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg1 int
+	if tmp, ok := rawArgs["age"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("age"))
+		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["email"] = arg1
+	args["age"] = arg1
 	return args, nil
 }
 
@@ -1054,7 +1063,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["username"].(string), fc.Args["email"].(string))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["username"].(string), fc.Args["age"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1083,6 +1092,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_id(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "age":
+				return ec.fieldContext_User_age(ctx, field)
 			case "resources":
 				return ec.fieldContext_User_resources(ctx, field)
 			}
@@ -1603,6 +1614,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_id(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "age":
+				return ec.fieldContext_User_age(ctx, field)
 			case "resources":
 				return ec.fieldContext_User_resources(ctx, field)
 			}
@@ -1652,6 +1665,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_id(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "age":
+				return ec.fieldContext_User_age(ctx, field)
 			case "resources":
 				return ec.fieldContext_User_resources(ctx, field)
 			}
@@ -2238,6 +2253,50 @@ func (ec *executionContext) fieldContext_User_name(ctx context.Context, field gr
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_age(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_age(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Age, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_age(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4560,6 +4619,11 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "name":
 			out.Values[i] = ec._User_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "age":
+			out.Values[i] = ec._User_age(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

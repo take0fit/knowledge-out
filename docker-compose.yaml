@@ -8,17 +8,31 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - dynamodb
-    environment:
-      DYNAMODB_ENDPOINT: http://dynamodb:8000
+      - dynamodb-local
 
-  dynamodb:
-    image: amazon/dynamodb-local
+    env_file:
+      - ./backend/.env
+
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
     ports:
       - "8000:8000"
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
     volumes:
-      - dynamodb_data:/home/dynamodblocal/data
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+
+  dynamodb-admin:
+    container_name: dynamodb-admin
+    image: aaronshaf/dynamodb-admin:latest
+    environment:
+      DYNAMO_ENDPOINT: dynamodb-local:8000
+    ports:
+      - "8001:8001"
+    depends_on:
+      - dynamodb-local
+
 
   # フロントエンドのサービスはNext.jsを使用する予定ですが、現段階では設定を省略します。
 

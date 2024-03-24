@@ -1,10 +1,10 @@
-package server
+package main
 
 import (
 	"book-action/interface/gql"
 	"book-action/interface/gql/generated"
+	"book-action/internal/application/usecase"
 	"book-action/internal/infrastructure/db/dynamodb"
-	"book-action/internal/usecase/user"
 	"log"
 	"net/http"
 
@@ -14,7 +14,8 @@ import (
 
 func main() {
 	// DynamoDBUserRepositoryのインスタンスを生成
-	userRepo := dynamodb.NewDynamoDBUserRepository()
+	client := dynamodb.NewClient()
+	userRepo := dynamodb.NewDynamoUserRepository(client)
 
 	// 他の依存関係をセットアップ
 	userUsecase := usecase.NewUserInteractor(userRepo)

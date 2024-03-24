@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	endpoint := os.Getenv("DYNAMODB_ENDPOINT")
+	endpoint := "http://dynamodb:8000"
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
 		region = "us-west-2" // デフォルトのリージョン設定
