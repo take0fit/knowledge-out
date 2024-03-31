@@ -5,7 +5,7 @@
 # User Types
 type User {
   id: ID!
-  name: String!
+  userName: String!
   age: Int!
   resources: [Resource!]!
 }
@@ -14,8 +14,9 @@ type User {
 type Resource {
   id: ID!
   userId: ID!
-  name: String!
-  categoryId: String!
+  resourceName: String!
+  resourceDetail: String!
+  resourceCategoryId: String!
   inputs: [Input!]!
 }
 
@@ -23,9 +24,9 @@ type Resource {
 type Input {
   id: ID!
   resourceId: ID!
-  categoryId: String!
-  name: String!
-  detail: String!
+  inputName: String!
+  inputDetail: String!
+  inputCategoryId: String!
   outputs: [Output!]!
 }
 
@@ -33,9 +34,9 @@ type Input {
 type Output {
   id: ID!
   inputId: ID!
-  categoryId: String!
-  name: String!
-  detail: String!
+  outputName: String!
+  outputDetail: String!
+  outputCategoryId: String!
 }
 
 # Query and Mutation
@@ -47,8 +48,31 @@ type Query {
 }
 
 type Mutation {
-  createUser(username: String!, age: Int!): User!
-  createResource(title: String!, categoryId: String!): Resource!
+  createUser(
+    userName: String!,
+    age: Int!
+  ): User!
+
+  createResource(
+    userId: String!,
+    resourceName: String!,
+    resourceDetail: String!
+    resourceCategoryId: String!
+  ): Resource!
+
+  createInput(
+    resourceId: String!,
+    inputName: String!,
+    inputDetail: String!,
+    inputCategoryId: String!
+  ): Input!
+
+  createOutput(
+    inputId: String!,
+    outputName: String!,
+    outputDetail: String!,
+    outputCategoryId: String!
+  ): Output!
 }
 
 # Common Types

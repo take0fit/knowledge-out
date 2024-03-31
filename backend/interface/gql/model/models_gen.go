@@ -8,23 +8,23 @@ type Error struct {
 }
 
 type Input struct {
-	ID         string    `json:"id"`
-	ResourceID string    `json:"resourceId"`
-	CategoryID string    `json:"categoryId"`
-	Name       string    `json:"name"`
-	Detail     string    `json:"detail"`
-	Outputs    []*Output `json:"outputs"`
+	ID              string    `json:"id"`
+	ResourceID      string    `json:"resourceId"`
+	InputName       string    `json:"inputName"`
+	InputDetail     string    `json:"inputDetail"`
+	InputCategoryID string    `json:"inputCategoryId"`
+	Outputs         []*Output `json:"outputs"`
 }
 
 type Mutation struct {
 }
 
 type Output struct {
-	ID         string `json:"id"`
-	InputID    string `json:"inputId"`
-	CategoryID string `json:"categoryId"`
-	Name       string `json:"name"`
-	Detail     string `json:"detail"`
+	ID               string `json:"id"`
+	InputID          string `json:"inputId"`
+	OutputName       string `json:"outputName"`
+	OutputDetail     string `json:"outputDetail"`
+	OutputCategoryID string `json:"outputCategoryId"`
 }
 
 type PageInfo struct {
@@ -38,16 +38,17 @@ type Query struct {
 }
 
 type Resource struct {
-	ID         string   `json:"id"`
-	UserID     string   `json:"userId"`
-	Name       string   `json:"name"`
-	CategoryID string   `json:"categoryId"`
-	Inputs     []*Input `json:"inputs"`
+	ID                 string   `json:"id"`
+	UserID             string   `json:"userId"`
+	ResourceName       string   `json:"resourceName"`
+	ResourceDetail     string   `json:"resourceDetail"`
+	ResourceCategoryID string   `json:"resourceCategoryId"`
+	Inputs             []*Input `json:"inputs"`
 }
 
 type User struct {
 	ID        string      `json:"id"`
-	Name      string      `json:"name"`
+	UserName  string      `json:"userName"`
 	Age       int         `json:"age"`
 	Resources []*Resource `json:"resources"`
 }

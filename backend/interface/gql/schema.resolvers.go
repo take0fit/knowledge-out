@@ -13,9 +13,9 @@ import (
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, username string, age int) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, userName string, age int) (*model.User, error) {
 	inputUser := dto.UserCreateInput{
-		Name: username,
+		Name: userName,
 		Age:  age,
 	}
 	user, err := r.userUsecase.CreateUser(ctx, inputUser)
@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, age 
 	fmt.Println(3, user)
 	gqlUser := &model.User{
 		ID:        user.ID,
-		Name:      user.Name,
+		UserName:  user.Name,
 		Age:       user.Age,
 		Resources: nil,
 	}
@@ -34,8 +34,18 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, age 
 }
 
 // CreateResource is the resolver for the createResource field.
-func (r *mutationResolver) CreateResource(ctx context.Context, title string, categoryID string) (*model.Resource, error) {
+func (r *mutationResolver) CreateResource(ctx context.Context, userID string, resourceName string, resourceDetail string, resourceCategoryID string) (*model.Resource, error) {
 	panic(fmt.Errorf("not implemented: CreateResource - createResource"))
+}
+
+// CreateInput is the resolver for the createInput field.
+func (r *mutationResolver) CreateInput(ctx context.Context, resourceID string, inputName string, inputDetail string, inputCategoryID string) (*model.Input, error) {
+	panic(fmt.Errorf("not implemented: CreateInput - createInput"))
+}
+
+// CreateOutput is the resolver for the createOutput field.
+func (r *mutationResolver) CreateOutput(ctx context.Context, inputID string, outputName string, outputDetail string, outputCategoryID string) (*model.Output, error) {
+	panic(fmt.Errorf("not implemented: CreateOutput - createOutput"))
 }
 
 // Users is the resolver for the users field.
@@ -49,7 +59,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 
 	gqlUser := &model.User{
 		ID:        user.ID,
-		Name:      user.Name,
+		UserName:  user.Name,
 		Resources: nil,
 	}
 
