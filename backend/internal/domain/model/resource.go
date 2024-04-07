@@ -1,9 +1,35 @@
 package model
 
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"time"
+)
+
 type Resource struct {
-	ID         string `json:"id"`
-	UserID     string `json:"user_id"`
-	Name       string `json:"name"`
-	Detail     string `json:"detail"`
-	CategoryId string `json:"category_id"`
+	Id         string
+	UserId     string
+	Name       string
+	Detail     string
+	CategoryId int
+	CreatedAt  time.Time
+}
+
+func NewResource(
+	userId string,
+	name string,
+	detail string,
+	categoryId int,
+) *Resource {
+	resourceId := fmt.Sprintf("Resource#%s", uuid.New().String())
+	newResource := Resource{
+		Id:         resourceId,
+		UserId:     userId,
+		Name:       name,
+		Detail:     detail,
+		CategoryId: categoryId,
+		CreatedAt:  time.Now(),
+	}
+
+	return &newResource
 }

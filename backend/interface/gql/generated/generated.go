@@ -61,9 +61,9 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateInput    func(childComplexity int, resourceID string, inputName string, inputDetail string, inputCategoryID string) int
-		CreateOutput   func(childComplexity int, inputID string, outputName string, outputDetail string, outputCategoryID string) int
-		CreateResource func(childComplexity int, userID string, resourceName string, resourceDetail string, resourceCategoryID string) int
+		CreateInput    func(childComplexity int, userID string, resourceID string, inputName string, inputDetail *string, inputCategoryID string) int
+		CreateOutput   func(childComplexity int, userID string, inputIds []string, outputName string, outputDetail *string, outputCategoryID string) int
+		CreateResource func(childComplexity int, userID string, resourceName string, resourceDetail *string, resourceCategoryID string) int
 		CreateUser     func(childComplexity int, userName string, age int) int
 	}
 
@@ -108,9 +108,9 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, userName string, age int) (*model.User, error)
-	CreateResource(ctx context.Context, userID string, resourceName string, resourceDetail string, resourceCategoryID string) (*model.Resource, error)
-	CreateInput(ctx context.Context, resourceID string, inputName string, inputDetail string, inputCategoryID string) (*model.Input, error)
-	CreateOutput(ctx context.Context, inputID string, outputName string, outputDetail string, outputCategoryID string) (*model.Output, error)
+	CreateResource(ctx context.Context, userID string, resourceName string, resourceDetail *string, resourceCategoryID string) (*model.Resource, error)
+	CreateInput(ctx context.Context, userID string, resourceID string, inputName string, inputDetail *string, inputCategoryID string) (*model.Input, error)
+	CreateOutput(ctx context.Context, userID string, inputIds []string, outputName string, outputDetail *string, outputCategoryID string) (*model.Output, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
@@ -204,7 +204,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateInput(childComplexity, args["resourceId"].(string), args["inputName"].(string), args["inputDetail"].(string), args["inputCategoryId"].(string)), true
+		return e.complexity.Mutation.CreateInput(childComplexity, args["userId"].(string), args["resourceId"].(string), args["inputName"].(string), args["inputDetail"].(*string), args["inputCategoryId"].(string)), true
 
 	case "Mutation.createOutput":
 		if e.complexity.Mutation.CreateOutput == nil {
@@ -216,7 +216,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateOutput(childComplexity, args["inputId"].(string), args["outputName"].(string), args["outputDetail"].(string), args["outputCategoryId"].(string)), true
+		return e.complexity.Mutation.CreateOutput(childComplexity, args["userId"].(string), args["inputIds"].([]string), args["outputName"].(string), args["outputDetail"].(*string), args["outputCategoryId"].(string)), true
 
 	case "Mutation.createResource":
 		if e.complexity.Mutation.CreateResource == nil {
@@ -228,7 +228,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateResource(childComplexity, args["userId"].(string), args["resourceName"].(string), args["resourceDetail"].(string), args["resourceCategoryId"].(string)), true
+		return e.complexity.Mutation.CreateResource(childComplexity, args["userId"].(string), args["resourceName"].(string), args["resourceDetail"].(*string), args["resourceCategoryId"].(string)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -575,21 +575,23 @@ type Mutation {
   createResource(
     userId: String!,
     resourceName: String!,
-    resourceDetail: String!
+    resourceDetail: String
     resourceCategoryId: String!
   ): Resource!
 
   createInput(
+    userId: String!,
     resourceId: String!,
     inputName: String!,
-    inputDetail: String!,
+    inputDetail: String,
     inputCategoryId: String!
   ): Input!
 
   createOutput(
-    inputId: String!,
+    userId: String!,
+    inputIds: [String!]!,
     outputName: String!,
-    outputDetail: String!,
+    outputDetail: String,
     outputCategoryId: String!
   ): Output!
 }
@@ -618,41 +620,50 @@ func (ec *executionContext) field_Mutation_createInput_args(ctx context.Context,
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["resourceId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("resourceId"))
+	if tmp, ok := rawArgs["userId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["resourceId"] = arg0
+	args["userId"] = arg0
 	var arg1 string
-	if tmp, ok := rawArgs["inputName"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputName"))
+	if tmp, ok := rawArgs["resourceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("resourceId"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inputName"] = arg1
+	args["resourceId"] = arg1
 	var arg2 string
-	if tmp, ok := rawArgs["inputDetail"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputDetail"))
+	if tmp, ok := rawArgs["inputName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputName"))
 		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inputDetail"] = arg2
-	var arg3 string
-	if tmp, ok := rawArgs["inputCategoryId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputCategoryId"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+	args["inputName"] = arg2
+	var arg3 *string
+	if tmp, ok := rawArgs["inputDetail"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputDetail"))
+		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inputCategoryId"] = arg3
+	args["inputDetail"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["inputCategoryId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputCategoryId"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["inputCategoryId"] = arg4
 	return args, nil
 }
 
@@ -660,41 +671,50 @@ func (ec *executionContext) field_Mutation_createOutput_args(ctx context.Context
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["inputId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputId"))
+	if tmp, ok := rawArgs["userId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inputId"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["outputName"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputName"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+	args["userId"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["inputIds"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputIds"))
+		arg1, err = ec.unmarshalNString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outputName"] = arg1
+	args["inputIds"] = arg1
 	var arg2 string
-	if tmp, ok := rawArgs["outputDetail"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputDetail"))
+	if tmp, ok := rawArgs["outputName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputName"))
 		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outputDetail"] = arg2
-	var arg3 string
-	if tmp, ok := rawArgs["outputCategoryId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputCategoryId"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
+	args["outputName"] = arg2
+	var arg3 *string
+	if tmp, ok := rawArgs["outputDetail"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputDetail"))
+		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["outputCategoryId"] = arg3
+	args["outputDetail"] = arg3
+	var arg4 string
+	if tmp, ok := rawArgs["outputCategoryId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputCategoryId"))
+		arg4, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["outputCategoryId"] = arg4
 	return args, nil
 }
 
@@ -719,10 +739,10 @@ func (ec *executionContext) field_Mutation_createResource_args(ctx context.Conte
 		}
 	}
 	args["resourceName"] = arg1
-	var arg2 string
+	var arg2 *string
 	if tmp, ok := rawArgs["resourceDetail"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("resourceDetail"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1290,7 +1310,7 @@ func (ec *executionContext) _Mutation_createResource(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateResource(rctx, fc.Args["userId"].(string), fc.Args["resourceName"].(string), fc.Args["resourceDetail"].(string), fc.Args["resourceCategoryId"].(string))
+		return ec.resolvers.Mutation().CreateResource(rctx, fc.Args["userId"].(string), fc.Args["resourceName"].(string), fc.Args["resourceDetail"].(*string), fc.Args["resourceCategoryId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1359,7 +1379,7 @@ func (ec *executionContext) _Mutation_createInput(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateInput(rctx, fc.Args["resourceId"].(string), fc.Args["inputName"].(string), fc.Args["inputDetail"].(string), fc.Args["inputCategoryId"].(string))
+		return ec.resolvers.Mutation().CreateInput(rctx, fc.Args["userId"].(string), fc.Args["resourceId"].(string), fc.Args["inputName"].(string), fc.Args["inputDetail"].(*string), fc.Args["inputCategoryId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1428,7 +1448,7 @@ func (ec *executionContext) _Mutation_createOutput(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateOutput(rctx, fc.Args["inputId"].(string), fc.Args["outputName"].(string), fc.Args["outputDetail"].(string), fc.Args["outputCategoryId"].(string))
+		return ec.resolvers.Mutation().CreateOutput(rctx, fc.Args["userId"].(string), fc.Args["inputIds"].([]string), fc.Args["outputName"].(string), fc.Args["outputDetail"].(*string), fc.Args["outputCategoryId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5582,6 +5602,38 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNUser2bookᚑactionᚋinterfaceᚋgqlᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {

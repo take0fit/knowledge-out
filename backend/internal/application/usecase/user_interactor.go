@@ -6,7 +6,6 @@ import (
 	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 )
 
 type UserUseCaseInteractor struct {
@@ -19,28 +18,28 @@ func NewUserInteractor(userRepo repository.UserRepository) *UserUseCaseInteracto
 	}
 }
 
-func (u *UserUseCaseInteractor) GetUserDetails(userID string) (*model.User, error) {
-	user, err := u.userRepo.GetUserDetails(userID)
+func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*model.User, error) {
+	userModel, err := u.userRepo.GetUserDetail(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return userModel, nil
 }
 
 func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input dto.UserCreateInput) (*model.User, error) {
-	// UUIDを生成してユーザーIDを作成
-	userID := fmt.Sprintf("User#%s", uuid.New().String())
-	user := &model.User{
-		ID:   userID,
-		Name: input.Name,
-		Age:  input.Age,
-	}
 
-	err := u.userRepo.CreateUser(user)
+	userName, err := model.NewUserName(input.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return user, nil
+	newUser := model.NewUser(userName, input.Age)
+
+	err = u.userRepo.CreateUser(newUser)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return newUser, nil
 }

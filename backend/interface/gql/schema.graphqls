@@ -56,21 +56,23 @@ type Mutation {
   createResource(
     userId: String!,
     resourceName: String!,
-    resourceDetail: String!
+    resourceDetail: String
     resourceCategoryId: String!
   ): Resource!
 
   createInput(
+    userId: String!,
     resourceId: String!,
     inputName: String!,
-    inputDetail: String!,
+    inputDetail: String,
     inputCategoryId: String!
   ): Input!
 
   createOutput(
-    inputId: String!,
+    userId: String!,
+    inputIds: [String!]!,
     outputName: String!,
-    outputDetail: String!,
+    outputDetail: String,
     outputCategoryId: String!
   ): Output!
 }

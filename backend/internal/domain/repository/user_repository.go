@@ -5,6 +5,6 @@ import (
 )
 
 type UserRepository interface {
-	GetUserDetails(userID string) (*model.User, error)
+	GetUserDetail(userId string) (*model.User, error)
 	CreateUser(*model.User) error
 }

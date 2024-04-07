@@ -34,17 +34,17 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, age 
 }
 
 // CreateResource is the resolver for the createResource field.
-func (r *mutationResolver) CreateResource(ctx context.Context, userID string, resourceName string, resourceDetail string, resourceCategoryID string) (*model.Resource, error) {
+func (r *mutationResolver) CreateResource(ctx context.Context, userID string, resourceName string, resourceDetail *string, resourceCategoryID string) (*model.Resource, error) {
 	panic(fmt.Errorf("not implemented: CreateResource - createResource"))
 }
 
 // CreateInput is the resolver for the createInput field.
-func (r *mutationResolver) CreateInput(ctx context.Context, resourceID string, inputName string, inputDetail string, inputCategoryID string) (*model.Input, error) {
+func (r *mutationResolver) CreateInput(ctx context.Context, userID string, resourceID string, inputName string, inputDetail *string, inputCategoryID string) (*model.Input, error) {
 	panic(fmt.Errorf("not implemented: CreateInput - createInput"))
 }
 
 // CreateOutput is the resolver for the createOutput field.
-func (r *mutationResolver) CreateOutput(ctx context.Context, inputID string, outputName string, outputDetail string, outputCategoryID string) (*model.Output, error) {
+func (r *mutationResolver) CreateOutput(ctx context.Context, userID string, inputIds []string, outputName string, outputDetail *string, outputCategoryID string) (*model.Output, error) {
 	panic(fmt.Errorf("not implemented: CreateOutput - createOutput"))
 }
 
