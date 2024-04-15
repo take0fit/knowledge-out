@@ -33,8 +33,20 @@ services:
     depends_on:
       - dynamodb-local
 
-
-  # フロントエンドのサービスはNext.jsを使用する予定ですが、現段階では設定を省略します。
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_GRAPHQL_URL=http://backend:8080/graphql
+    depends_on:
+      - backend
 
 volumes:
   dynamodb_data:
