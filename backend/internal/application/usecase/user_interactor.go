@@ -18,6 +18,15 @@ func NewUserInteractor(userRepo repository.UserRepository) *UserUseCaseInteracto
 	}
 }
 
+func (u *UserUseCaseInteractor) GetUserList() ([]*model.User, error) {
+	users, err := u.userRepo.ListUsersSortedByCreatedAt(true)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*model.User, error) {
 	userModel, err := u.userRepo.GetUserDetail(userId)
 	if err != nil {

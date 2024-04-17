@@ -4,6 +4,9 @@ VERSION := v0.0.1
 up :
 	docker compose up
 
+air:
+	docker-compose exec app air -c .air.toml
+
 gqlgen :
 	cd backend/interface/gql && gqlgen generate
 

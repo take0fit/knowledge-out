@@ -33,13 +33,16 @@ func (r *DynamoUserRepository) GetUserDetail(userId string) (*model.User, error)
 		},
 	})
 	if err != nil {
-		panic(fmt.Errorf("failed to get item from DynamoDB, %w", err))
+		return nil, fmt.Errorf("failed to get item from DynamoDB, %w", err)
+	}
+	if len(result.Item) == 0 {
+		return nil, fmt.Errorf("not found")
 	}
 
 	var user model.User
 	err = attributevalue.UnmarshalMap(result.Item, &user)
 	if err != nil {
-		panic(fmt.Errorf("failed to unmarshal result item, %w", err))
+		return nil, fmt.Errorf("failed to unmarshal result item, %w", err)
 	}
 
 	return &user, nil
@@ -52,10 +55,10 @@ func (r *DynamoUserRepository) CreateUser(user *model.User) error {
 	nameItem := map[string]types.AttributeValue{
 		"Id":        &types.AttributeValueMemberS{Value: user.Id},
 		"DataType":  &types.AttributeValueMemberS{Value: dataType},
-		"DataValue": &types.AttributeValueMemberS{Value: user.CreatedAt.String()},
+		"DataValue": &types.AttributeValueMemberS{Value: user.CreatedAt},
 		"UserName":  &types.AttributeValueMemberS{Value: user.Name},
 		"Age":       &types.AttributeValueMemberN{Value: strconv.Itoa(user.Age)},
-		"CreatedAt": &types.AttributeValueMemberS{Value: user.CreatedAt.String()},
+		"CreatedAt": &types.AttributeValueMemberS{Value: user.CreatedAt},
 	}
 
 	_, err := r.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
@@ -66,34 +69,30 @@ func (r *DynamoUserRepository) CreateUser(user *model.User) error {
 		return fmt.Errorf("failed to put item into DynamoDB: %w", err)
 	}
 
-	if err != nil {
-		return fmt.Errorf("failed to put item into DynamoDB: %w", err)
-	}
-
 	return nil
 }
 
 func (r *DynamoUserRepository) ListUsersSortedByCreatedAt(ascending bool) ([]*model.User, error) {
-	gsiName := "DataValueIndex"
+	gsiName := "DataTypeDataValueIndex"
 	dataType := "userCreatedAt"
 
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String("MyDataModel"),
 		IndexName:              aws.String(gsiName),
-		KeyConditionExpression: aws.String("DataType = :dataType"),
+		KeyConditionExpression: aws.String("DataType = :dataType AND DataValue BETWEEN :startValue AND :endValue"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":dataType": &types.AttributeValueMemberS{Value: dataType},
+			":dataType":   &types.AttributeValueMemberS{Value: dataType},
+			":startValue": &types.AttributeValueMemberS{Value: "2024-01-01T00:00:00Z"},
+			":endValue":   &types.AttributeValueMemberS{Value: "2024-12-31T23:59:59Z"},
 		},
 		ScanIndexForward: aws.Bool(ascending), // trueで昇順、falseで降順
 	}
 
-	// Query実行
 	result, err := r.client.Query(context.TODO(), input)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query items from DynamoDB: %w", err)
 	}
 
-	// 結果をモデルにアンマーシャル
 	users := make([]*model.User, 0)
 	for _, item := range result.Items {
 		var user model.User

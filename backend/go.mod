@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.13.11
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.31.0
 	github.com/google/uuid v1.3.0
+	github.com/rs/cors v1.10.1
 	github.com/vektah/gqlparser/v2 v2.5.11
 )
 

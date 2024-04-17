@@ -10,6 +10,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 
 	// サーバーの起動
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", cors.AllowAll().Handler(srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

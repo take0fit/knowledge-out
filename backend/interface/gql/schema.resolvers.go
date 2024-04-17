@@ -22,9 +22,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, userName string, age 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	fmt.Println(3, user)
+
 	gqlUser := &model.User{
-		ID:        user.ID,
+		ID:        user.Id,
 		UserName:  user.Name,
 		Age:       user.Age,
 		Resources: nil,
@@ -50,15 +50,32 @@ func (r *mutationResolver) CreateOutput(ctx context.Context, userID string, inpu
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	users, err := r.userUsecase.GetUserList()
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlUsers []*model.User
+	for _, user := range users {
+		gqlUsers = append(gqlUsers, &model.User{
+			ID:       user.Id,
+			UserName: user.Name,
+			Age:      user.Age,
+		})
+	}
+
+	return gqlUsers, err
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	user, err := r.userUsecase.GetUserDetails(id)
+	if err != nil {
+		return nil, err
+	}
 
 	gqlUser := &model.User{
-		ID:        user.ID,
+		ID:        user.Id,
 		UserName:  user.Name,
 		Resources: nil,
 	}

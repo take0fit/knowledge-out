@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	Id        string    `dynamodbav:"Id"`
-	Name      string    `dynamodbav:"UserName"`
-	Age       int       `dynamodbav:"Age"`
-	CreatedAt time.Time `dynamodbav:"CreatedAt"`
+	Id        string `dynamodbav:"Id"`
+	Name      string `dynamodbav:"userName"`
+	Age       int    `dynamodbav:"Age"`
+	CreatedAt string `dynamodbav:"CreatedAt"`
 }
 
 func NewUser(name *UserName, age int) *User {
@@ -19,7 +19,7 @@ func NewUser(name *UserName, age int) *User {
 		Id:        userId,
 		Name:      string(*name),
 		Age:       age,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().String(),
 	}
 
 	return &newUser
