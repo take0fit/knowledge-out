@@ -1,14 +1,14 @@
 package dynamodb
 
 import (
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
 	"strconv"
 )
 
@@ -22,7 +22,7 @@ func NewDynamoResourceRepository(client *dynamodb.Client) repository.ResourceRep
 	}
 }
 
-func (r *DynamoResourceRepository) GetResourceDetail(resourceId string) (*model.Resource, error) {
+func (r *DynamoResourceRepository) GetResourceDetail(resourceId string) (*entity.Resource, error) {
 	dataType := "resourceUserId"
 
 	result, err := r.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
@@ -36,7 +36,7 @@ func (r *DynamoResourceRepository) GetResourceDetail(resourceId string) (*model.
 		panic(fmt.Errorf("failed to get item from DynamoDB, %w", err))
 	}
 
-	var resource model.Resource
+	var resource entity.Resource
 	err = attributevalue.UnmarshalMap(result.Item, &resource)
 	if err != nil {
 		panic(fmt.Errorf("failed to unmarshal result item, %w", err))
@@ -45,7 +45,7 @@ func (r *DynamoResourceRepository) GetResourceDetail(resourceId string) (*model.
 	return &resource, nil
 }
 
-func (r *DynamoResourceRepository) CreateResource(resource *model.Resource) error {
+func (r *DynamoResourceRepository) CreateResource(resource *entity.Resource) error {
 	tableName := "MyDataModel"
 	dataType := "resourceUserId"
 
@@ -75,28 +75,27 @@ func (r *DynamoResourceRepository) CreateResource(resource *model.Resource) erro
 	return nil
 }
 
-func (r *DynamoResourceRepository) ListResourcesByUserId(userId string) ([]*model.Resource, error) {
-	gsiName := "DataValueIndex"
-	partitionKeyName := "DataType" // または "DataValue"、実際の設計に依存
+func (r *DynamoResourceRepository) ListResourcesByUserId(userId string) ([]*entity.Resource, error) {
+	gsiName := "DataTypeDataValueIndex"
+	partitionKeyName := "DataType"
 
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String("MyDataModel"),
-		IndexName:              aws.String(gsiName), // GSI名
+		IndexName:              aws.String(gsiName),
 		KeyConditionExpression: aws.String(partitionKeyName + " BEGINS_WITH :userIdPrefix"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":userIdPrefix": &types.AttributeValueMemberS{Value: userId + "#"},
 		},
 	}
 
-	// Query実行
 	result, err := r.client.Query(context.TODO(), input)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query items from DynamoDB: %w", err)
 	}
 
-	resources := make([]*model.Resource, 0)
+	resources := make([]*entity.Resource, 0)
 	for _, item := range result.Items {
-		var resource model.Resource
+		var resource entity.Resource
 		err := attributevalue.UnmarshalMap(item, &resource)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal result item: %w", err)

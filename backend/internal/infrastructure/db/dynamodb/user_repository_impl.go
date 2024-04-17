@@ -1,14 +1,14 @@
 package dynamodb
 
 import (
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
 	"strconv"
 )
 
@@ -22,8 +22,8 @@ func NewDynamoUserRepository(client *dynamodb.Client) repository.UserRepository 
 	}
 }
 
-func (r *DynamoUserRepository) GetUserDetail(userId string) (*model.User, error) {
-	dataType := "userCreatedAt"
+func (r *DynamoUserRepository) GetUserDetail(userId string) (*entity.User, error) {
+	dataType := "UserCreatedAt"
 
 	result, err := r.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		TableName: aws.String("MyDataModel"),
@@ -39,7 +39,7 @@ func (r *DynamoUserRepository) GetUserDetail(userId string) (*model.User, error)
 		return nil, fmt.Errorf("not found")
 	}
 
-	var user model.User
+	var user entity.User
 	err = attributevalue.UnmarshalMap(result.Item, &user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal result item, %w", err)
@@ -48,16 +48,16 @@ func (r *DynamoUserRepository) GetUserDetail(userId string) (*model.User, error)
 	return &user, nil
 }
 
-func (r *DynamoUserRepository) CreateUser(user *model.User) error {
+func (r *DynamoUserRepository) CreateUser(user *entity.User) error {
 	tableName := "MyDataModel"
-	dataType := "userCreatedAt"
+	dataType := "UserCreatedAt"
 
 	nameItem := map[string]types.AttributeValue{
 		"Id":        &types.AttributeValueMemberS{Value: user.Id},
 		"DataType":  &types.AttributeValueMemberS{Value: dataType},
 		"DataValue": &types.AttributeValueMemberS{Value: user.CreatedAt},
 		"UserName":  &types.AttributeValueMemberS{Value: user.Name},
-		"Age":       &types.AttributeValueMemberN{Value: strconv.Itoa(user.Age)},
+		"Age":       &types.AttributeValueMemberN{Value: strconv.Itoa(user.Birthday)},
 		"CreatedAt": &types.AttributeValueMemberS{Value: user.CreatedAt},
 	}
 
@@ -72,9 +72,9 @@ func (r *DynamoUserRepository) CreateUser(user *model.User) error {
 	return nil
 }
 
-func (r *DynamoUserRepository) ListUsersSortedByCreatedAt(ascending bool) ([]*model.User, error) {
+func (r *DynamoUserRepository) ListUsersSortedByCreatedAt(ascending bool) ([]*entity.User, error) {
 	gsiName := "DataTypeDataValueIndex"
-	dataType := "userCreatedAt"
+	dataType := "UserCreatedAt"
 
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String("MyDataModel"),
@@ -93,9 +93,9 @@ func (r *DynamoUserRepository) ListUsersSortedByCreatedAt(ascending bool) ([]*mo
 		return nil, fmt.Errorf("failed to query items from DynamoDB: %w", err)
 	}
 
-	users := make([]*model.User, 0)
+	users := make([]*entity.User, 0)
 	for _, item := range result.Items {
-		var user model.User
+		var user entity.User
 		err = attributevalue.UnmarshalMap(item, &user)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unmarshal result item: %w", err)

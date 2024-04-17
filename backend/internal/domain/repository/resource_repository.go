@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"book-action/internal/domain/model"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
 )
 
 type ResourceRepository interface {
-	ListResourcesByUserId(userId string) ([]*model.Resource, error)
-	GetResourceDetail(resourceId string) (*model.Resource, error)
-	CreateResource(*model.Resource) error
+	ListResourcesByUserId(userId string) ([]*entity.Resource, error)
+	GetResourceDetail(resourceId string) (*entity.Resource, error)
+	CreateResource(*entity.Resource) error
 }

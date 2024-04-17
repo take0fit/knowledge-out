@@ -1,12 +1,16 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+scalar DateTime
 
 # User Types
 type User {
   id: ID!
-  userName: String!
-  age: Int!
+  nickname: String!
+  birthday: DateTime
+  age: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
   resources: [Resource!]!
 }
 
@@ -15,8 +19,10 @@ type Resource {
   id: ID!
   userId: ID!
   resourceName: String!
-  resourceDetail: String!
-  resourceCategoryId: String!
+  resourceDetail: String
+  resourceCategoryId: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   inputs: [Input!]!
 }
 
@@ -25,8 +31,10 @@ type Input {
   id: ID!
   resourceId: ID!
   inputName: String!
-  inputDetail: String!
-  inputCategoryId: String!
+  inputDetail: String
+  inputCategoryId: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   outputs: [Output!]!
 }
 
@@ -35,8 +43,10 @@ type Output {
   id: ID!
   inputId: ID!
   outputName: String!
-  outputDetail: String!
-  outputCategoryId: String!
+  outputDetail: String
+  outputCategoryId: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 # Query and Mutation
@@ -45,19 +55,23 @@ type Query {
   user(id: ID!): User
   resources: [Resource!]!
   resource(id: ID!): Resource
+  inputs: [Input!]!
+  input(id: ID!): Input
+  outputs: [Output!]!
+  output(id: ID!): Output
 }
 
 type Mutation {
   createUser(
-    userName: String!,
-    age: Int!
+    nickname: String!,
+    birthday: DateTime
   ): User!
 
   createResource(
     userId: String!,
     resourceName: String!,
     resourceDetail: String
-    resourceCategoryId: String!
+    resourceCategoryId: Int!
   ): Resource!
 
   createInput(
@@ -65,7 +79,7 @@ type Mutation {
     resourceId: String!,
     inputName: String!,
     inputDetail: String,
-    inputCategoryId: String!
+    inputCategoryId: Int!
   ): Input!
 
   createOutput(
@@ -73,7 +87,7 @@ type Mutation {
     inputIds: [String!]!,
     outputName: String!,
     outputDetail: String,
-    outputCategoryId: String!
+    outputCategoryId: Int!
   ): Output!
 }
 

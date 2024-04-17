@@ -1,4 +1,4 @@
-NAME := book-action
+NAME := knowledge-out
 VERSION := v0.0.1
 
 up :

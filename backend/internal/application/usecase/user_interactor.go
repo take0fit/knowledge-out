@@ -1,11 +1,12 @@
 package usecase
 
 import (
-	"book-action/internal/application/dto"
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
+	"github.com/take0fit/knowledge-out/internal/application/dto"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
+	"github.com/take0fit/knowledge-out/internal/domain/valueobject"
 )
 
 type UserUseCaseInteractor struct {
@@ -18,37 +19,36 @@ func NewUserInteractor(userRepo repository.UserRepository) *UserUseCaseInteracto
 	}
 }
 
-func (u *UserUseCaseInteractor) GetUserList() ([]*model.User, error) {
+func (u *UserUseCaseInteractor) GetUserList() (dto.OutputUsers, error) {
 	users, err := u.userRepo.ListUsersSortedByCreatedAt(true)
 	if err != nil {
 		return nil, err
 	}
 
-	return users, nil
+	return dto.NewOutputUsers(users), nil
 }
 
-func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*model.User, error) {
-	userModel, err := u.userRepo.GetUserDetail(userId)
+func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*dto.OutputUser, error) {
+	user, err := u.userRepo.GetUserDetail(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	return userModel, nil
+	return dto.NewOutputUser(user), nil
 }
 
-func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input dto.UserCreateInput) (*model.User, error) {
+func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input *dto.UserCreateInput) (*dto.OutputUser, error) {
 
-	userName, err := model.NewUserName(input.Name)
+	userName, err := valueobject.NewUserNickname(input.Nickname)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	newUser := model.NewUser(userName, input.Age)
-
+	newUser := entity.NewUser(userName, input.Birthday)
 	err = u.userRepo.CreateUser(newUser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return newUser, nil
+	return dto.NewOutputUser(newUser), nil
 }

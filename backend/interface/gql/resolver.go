@@ -1,15 +1,26 @@
 package gql
 
 import (
-	"book-action/internal/application/usecase"
+	"github.com/take0fit/knowledge-out/internal/application/usecase"
 )
 
 type Resolver struct {
-	userUsecase *usecase.UserUseCaseInteractor
+	userUsecase     *usecase.UserUseCaseInteractor
+	resourceUsecase *usecase.ResourceUseCaseInteractor
+	inputUsecase    *usecase.InputUseCaseInteractor
+	outputUsecase   *usecase.OutputUseCaseInteractor
 }
 
-func NewResolver(userUsecase *usecase.UserUseCaseInteractor) *Resolver {
+func NewResolver(
+	userUsecase *usecase.UserUseCaseInteractor,
+	resourceUsecase *usecase.ResourceUseCaseInteractor,
+	inputUsecase *usecase.InputUseCaseInteractor,
+	outputUsecase *usecase.OutputUseCaseInteractor,
+) *Resolver {
 	return &Resolver{
-		userUsecase: userUsecase,
+		userUsecase:     userUsecase,
+		resourceUsecase: resourceUsecase,
+		inputUsecase:    inputUsecase,
+		outputUsecase:   outputUsecase,
 	}
 }

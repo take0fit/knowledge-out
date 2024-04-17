@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"book-action/internal/application/dto"
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
+	"github.com/take0fit/knowledge-out/internal/application/dto"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
 )
 
 type InputUseCaseInteractor struct {
@@ -18,7 +18,7 @@ func NewInputInteractor(inputRepo repository.InputRepository) *InputUseCaseInter
 	}
 }
 
-func (u *InputUseCaseInteractor) GetInputDetail(inputId string) (*model.Input, error) {
+func (u *InputUseCaseInteractor) GetInputDetail(inputId string) (*entity.Input, error) {
 	inputModel, err := u.inputRepo.GetInputDetail(inputId)
 	if err != nil {
 		return nil, err
@@ -27,9 +27,9 @@ func (u *InputUseCaseInteractor) GetInputDetail(inputId string) (*model.Input, e
 	return inputModel, nil
 }
 
-func (u *InputUseCaseInteractor) CreateInput(ctx context.Context, input dto.InputCreateInput) (*model.Input, error) {
+func (u *InputUseCaseInteractor) CreateInput(ctx context.Context, input dto.InputCreateInput) (*entity.Input, error) {
 
-	inputModel := model.NewInput(
+	inputModel := entity.NewInput(
 		input.UserId,
 		input.ResourceId,
 		input.Name,

@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"book-action/internal/application/dto"
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
+	"github.com/take0fit/knowledge-out/internal/application/dto"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
 )
 
 type OutputUseCaseInteractor struct {
@@ -18,7 +18,7 @@ func NewOutputInteractor(outputRepo repository.OutputRepository) *OutputUseCaseI
 	}
 }
 
-func (u *OutputUseCaseInteractor) GetOutputDetail(outputId string) (*model.Output, error) {
+func (u *OutputUseCaseInteractor) GetOutputDetail(outputId string) (*entity.Output, error) {
 	output, err := u.outputRepo.GetOutputDetail(outputId)
 	if err != nil {
 		return nil, err
@@ -27,8 +27,8 @@ func (u *OutputUseCaseInteractor) GetOutputDetail(outputId string) (*model.Outpu
 	return output, nil
 }
 
-func (u *OutputUseCaseInteractor) CreateOutput(ctx context.Context, input dto.OutputCreateInput) (*model.Output, error) {
-	outputModel := model.NewOutput(
+func (u *OutputUseCaseInteractor) CreateOutput(ctx context.Context, input dto.OutputCreateInput) (*entity.Output, error) {
+	outputModel := entity.NewOutput(
 		input.UserId,
 		input.InputIds,
 		input.Name,

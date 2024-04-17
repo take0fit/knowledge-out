@@ -1,4 +1,4 @@
-package model
+package entity
 
 import (
 	"fmt"
@@ -6,33 +6,33 @@ import (
 	"time"
 )
 
-type Output struct {
+type Input struct {
 	Id         string
 	UserId     string
-	InputIds   []string
+	ResourceId string
 	Name       string
 	Detail     string
 	CategoryId int
 	CreatedAt  time.Time
 }
 
-func NewOutput(
+func NewInput(
 	userId string,
-	inputIds []string,
+	resourceId string,
 	name string,
 	detail string,
 	categoryId int,
-) *Output {
-	outputId := fmt.Sprintf("Output#%s", uuid.New().String())
-	newOutput := Output{
-		Id:         outputId,
+) *Input {
+	inputId := fmt.Sprintf("Input#%s", uuid.New().String())
+	newInput := Input{
+		Id:         inputId,
 		UserId:     userId,
-		InputIds:   inputIds,
+		ResourceId: resourceId,
 		Name:       name,
 		Detail:     detail,
 		CategoryId: categoryId,
 		CreatedAt:  time.Now(),
 	}
 
-	return &newOutput
+	return &newInput
 }

@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"book-action/internal/application/dto"
-	"book-action/internal/domain/model"
-	"book-action/internal/domain/repository"
 	"context"
 	"fmt"
+	"github.com/take0fit/knowledge-out/internal/application/dto"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
+	"github.com/take0fit/knowledge-out/internal/domain/repository"
 )
 
 type ResourceUseCaseInteractor struct {
@@ -18,7 +18,7 @@ func NewResourceInteractor(resourceRepo repository.ResourceRepository) *Resource
 	}
 }
 
-func (u *ResourceUseCaseInteractor) GetResourceDetail(resourceId string) (*model.Resource, error) {
+func (u *ResourceUseCaseInteractor) GetResourceDetail(resourceId string) (*entity.Resource, error) {
 	resource, err := u.resourceRepo.GetResourceDetail(resourceId)
 	if err != nil {
 		return nil, err
@@ -27,9 +27,9 @@ func (u *ResourceUseCaseInteractor) GetResourceDetail(resourceId string) (*model
 	return resource, nil
 }
 
-func (u *ResourceUseCaseInteractor) CreateResource(ctx context.Context, input dto.ResourceCreateInput) (*model.Resource, error) {
+func (u *ResourceUseCaseInteractor) CreateResource(ctx context.Context, input *dto.InputCreateResource) (*entity.Resource, error) {
 
-	resourceModel := model.NewResource(
+	resourceModel := entity.NewResource(
 		input.UserId,
 		input.Name,
 		input.Detail,

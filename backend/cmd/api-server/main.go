@@ -1,10 +1,10 @@
 package main
 
 import (
-	"book-action/interface/gql"
-	"book-action/interface/gql/generated"
-	"book-action/internal/application/usecase"
-	"book-action/internal/infrastructure/db/dynamodb"
+	"github.com/take0fit/knowledge-out/interface/gql"
+	"github.com/take0fit/knowledge-out/interface/gql/generated"
+	"github.com/take0fit/knowledge-out/internal/application/usecase"
+	"github.com/take0fit/knowledge-out/internal/infrastructure/db/dynamodb"
 	"log"
 	"net/http"
 
@@ -17,10 +17,20 @@ func main() {
 	// DynamoDBUserRepositoryのインスタンスを生成
 	client := dynamodb.NewClient()
 	userRepo := dynamodb.NewDynamoUserRepository(client)
+	resourceRepo := dynamodb.NewDynamoResourceRepository(client)
+	inputRepo := dynamodb.NewDynamoInputRepository(client)
+	outputRepo := dynamodb.NewDynamoOutputRepository(client)
 
-	// 他の依存関係をセットアップ
 	userUsecase := usecase.NewUserInteractor(userRepo)
-	resolver := gql.NewResolver(userUsecase)
+	resourceUsecase := usecase.NewResourceInteractor(resourceRepo)
+	inputUsecase := usecase.NewInputInteractor(inputRepo)
+	outputUsecase := usecase.NewOutputInteractor(outputRepo)
+	resolver := gql.NewResolver(
+		userUsecase,
+		resourceUsecase,
+		inputUsecase,
+		outputUsecase,
+	)
 
 	// GraphQLサーバーの設定
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))

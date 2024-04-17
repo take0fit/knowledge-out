@@ -1,4 +1,4 @@
-package model
+package entity
 
 import (
 	"fmt"
@@ -10,15 +10,16 @@ type Resource struct {
 	Id         string
 	UserId     string
 	Name       string
-	Detail     string
+	Detail     *string
 	CategoryId int
-	CreatedAt  time.Time
+	CreatedAt  string
+	UpdatedAt  string
 }
 
 func NewResource(
 	userId string,
 	name string,
-	detail string,
+	detail *string,
 	categoryId int,
 ) *Resource {
 	resourceId := fmt.Sprintf("Resource#%s", uuid.New().String())
@@ -28,7 +29,8 @@ func NewResource(
 		Name:       name,
 		Detail:     detail,
 		CategoryId: categoryId,
-		CreatedAt:  time.Now(),
+		CreatedAt:  time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt:  time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	return &newResource

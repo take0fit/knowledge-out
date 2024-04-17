@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"book-action/interface/gql/model"
+	"github.com/take0fit/knowledge-out/interface/gql/model"
 )
 
 type UserUsecase interface {

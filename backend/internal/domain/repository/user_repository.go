@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"book-action/internal/domain/model"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
 )
 
 type UserRepository interface {
-	GetUserDetail(userId string) (*model.User, error)
-	ListUsersSortedByCreatedAt(ascending bool) ([]*model.User, error)
-	CreateUser(*model.User) error
+	GetUserDetail(userId string) (*entity.User, error)
+	ListUsersSortedByCreatedAt(ascending bool) ([]*entity.User, error)
+	CreateUser(*entity.User) error
 }

@@ -1,4 +1,4 @@
-module book-action
+module github.com/take0fit/knowledge-out
 
 go 1.20
 

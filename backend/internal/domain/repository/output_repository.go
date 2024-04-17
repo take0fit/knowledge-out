@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"book-action/internal/domain/model"
+	"github.com/take0fit/knowledge-out/internal/domain/entity"
 )
 
 type OutputRepository interface {
-	GetOutputs(outputId string) ([]*model.Output, error)
-	GetOutputDetail(userId string) (*model.Output, error)
-	CreateOutput(*model.Output) error
+	GetOutputs(outputId string) ([]*entity.Output, error)
+	GetOutputDetail(userId string) (*entity.Output, error)
+	CreateOutput(*entity.Output) error
 }
