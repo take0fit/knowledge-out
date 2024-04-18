@@ -14,8 +14,8 @@ import (
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, nickname string, birthday *model.DateTime) (*model.User, error) {
-	inputUser := dto.NewInputCreateUser(nickname, birthday.Time)
+func (r *mutationResolver) CreateUser(ctx context.Context, nickname string, birthday *string) (*model.User, error) {
+	inputUser := dto.NewInputCreateUser(nickname, birthday)
 	user, err := r.userUsecase.CreateUser(ctx, inputUser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
@@ -44,8 +44,10 @@ func (r *mutationResolver) CreateResource(ctx context.Context, userID string, re
 	}
 
 	gqlResource := &model.Resource{
-		ID:           resource.Id,
-		ResourceName: resource.Name,
+		ID:                 resource.Id,
+		ResourceName:       resource.Name,
+		ResourceDetail:     resource.Detail,
+		ResourceCategoryID: resource.CategoryId,
 	}
 
 	return gqlResource, err
@@ -53,12 +55,48 @@ func (r *mutationResolver) CreateResource(ctx context.Context, userID string, re
 
 // CreateInput is the resolver for the createInput field.
 func (r *mutationResolver) CreateInput(ctx context.Context, userID string, resourceID string, inputName string, inputDetail *string, inputCategoryID int) (*model.Input, error) {
-	panic(fmt.Errorf("not implemented: CreateInput - createInput"))
+	inputInput := dto.NewInputCreateInput(
+		userID,
+		resourceID,
+		inputName,
+		inputDetail,
+		inputCategoryID,
+	)
+	input, err := r.inputUsecase.CreateInput(ctx, inputInput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create input: %w", err)
+	}
+
+	gqlInput := &model.Input{
+		ID:              input.Id,
+		InputName:       input.Name,
+		InputDetail:     input.Detail,
+		InputCategoryID: input.CategoryId,
+	}
+
+	return gqlInput, err
 }
 
 // CreateOutput is the resolver for the createOutput field.
 func (r *mutationResolver) CreateOutput(ctx context.Context, userID string, inputIds []string, outputName string, outputDetail *string, outputCategoryID int) (*model.Output, error) {
-	panic(fmt.Errorf("not implemented: CreateOutput - createOutput"))
+	inputOutput := dto.NewInputCreateOutput(
+		userID,
+		inputIds,
+		outputName,
+		outputDetail,
+		outputCategoryID,
+	)
+	output, err := r.outputUsecase.CreateOutput(ctx, inputOutput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create output: %w", err)
+	}
+
+	gqlOutput := &model.Output{
+		ID:         output.Id,
+		OutputName: output.Name,
+	}
+
+	return gqlOutput, err
 }
 
 // Users is the resolver for the users field.
@@ -96,9 +134,9 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 	return gqlUser, err
 }
 
-// Resources is the resolver for the resources field.
-func (r *queryResolver) Resources(ctx context.Context) ([]*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: Resources - resources"))
+// ResourcesByUserID is the resolver for the resourcesByUserId field.
+func (r *queryResolver) ResourcesByUserID(ctx context.Context, userID string) ([]*model.Resource, error) {
+	panic(fmt.Errorf("not implemented: ResourcesByUserID - resourcesByUserId"))
 }
 
 // Resource is the resolver for the resource field.
@@ -106,9 +144,9 @@ func (r *queryResolver) Resource(ctx context.Context, id string) (*model.Resourc
 	panic(fmt.Errorf("not implemented: Resource - resource"))
 }
 
-// Inputs is the resolver for the inputs field.
-func (r *queryResolver) Inputs(ctx context.Context) ([]*model.Input, error) {
-	panic(fmt.Errorf("not implemented: Inputs - inputs"))
+// InputsByUserID is the resolver for the inputsByUserId field.
+func (r *queryResolver) InputsByUserID(ctx context.Context, userID string) ([]*model.Input, error) {
+	panic(fmt.Errorf("not implemented: InputsByUserID - inputsByUserId"))
 }
 
 // Input is the resolver for the input field.
@@ -116,9 +154,9 @@ func (r *queryResolver) Input(ctx context.Context, id string) (*model.Input, err
 	panic(fmt.Errorf("not implemented: Input - input"))
 }
 
-// Outputs is the resolver for the outputs field.
-func (r *queryResolver) Outputs(ctx context.Context) ([]*model.Output, error) {
-	panic(fmt.Errorf("not implemented: Outputs - outputs"))
+// OutputsByUserID is the resolver for the outputsByUserId field.
+func (r *queryResolver) OutputsByUserID(ctx context.Context, userID string) ([]*model.Output, error) {
+	panic(fmt.Errorf("not implemented: OutputsByUserID - outputsByUserId"))
 }
 
 // Output is the resolver for the output field.
@@ -134,3 +172,19 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) Resources(ctx context.Context) ([]*model.Resource, error) {
+	panic(fmt.Errorf("not implemented: Resources - resources"))
+}
+func (r *queryResolver) Inputs(ctx context.Context) ([]*model.Input, error) {
+	panic(fmt.Errorf("not implemented: Inputs - inputs"))
+}
+func (r *queryResolver) Outputs(ctx context.Context) ([]*model.Output, error) {
+	panic(fmt.Errorf("not implemented: Outputs - outputs"))
+}

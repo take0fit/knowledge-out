@@ -7,20 +7,21 @@ import (
 )
 
 type Output struct {
-	Id         string
-	UserId     string
+	Id         string `dynamodbav:"Id"`
+	UserId     string `dynamodbav:"UserId"`
 	InputIds   []string
-	Name       string
-	Detail     string
-	CategoryId int
-	CreatedAt  time.Time
+	Name       string  `dynamodbav:"Name"`
+	Detail     *string `dynamodbav:"Detail,omitempty"`
+	CategoryId int     `dynamodbav:"CategoryId"`
+	CreatedAt  string  `dynamodbav:"CreatedAt"`
+	UpdatedAt  string  `dynamodbav:"UpdatedAt"`
 }
 
 func NewOutput(
 	userId string,
 	inputIds []string,
 	name string,
-	detail string,
+	detail *string,
 	categoryId int,
 ) *Output {
 	outputId := fmt.Sprintf("Output#%s", uuid.New().String())
@@ -31,7 +32,8 @@ func NewOutput(
 		Name:       name,
 		Detail:     detail,
 		CategoryId: categoryId,
-		CreatedAt:  time.Now(),
+		CreatedAt:  time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt:  time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	return &newOutput

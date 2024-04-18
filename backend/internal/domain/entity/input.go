@@ -7,20 +7,21 @@ import (
 )
 
 type Input struct {
-	Id         string
-	UserId     string
-	ResourceId string
-	Name       string
-	Detail     string
-	CategoryId int
-	CreatedAt  time.Time
+	Id         string  `dynamodbav:"Id"`
+	UserId     string  `dynamodbav:"UserId"`
+	ResourceId string  `dynamodbav:"ResourceId"`
+	Name       string  `dynamodbav:"Name"`
+	Detail     *string `dynamodbav:"Detail,omitempty"`
+	CategoryId int     `dynamodbav:"CategoryId"`
+	CreatedAt  string  `dynamodbav:"CreatedAt"`
+	UpdatedAt  string  `dynamodbav:"UpdatedAt"`
 }
 
 func NewInput(
 	userId string,
 	resourceId string,
 	name string,
-	detail string,
+	detail *string,
 	categoryId int,
 ) *Input {
 	inputId := fmt.Sprintf("Input#%s", uuid.New().String())
@@ -31,7 +32,8 @@ func NewInput(
 		Name:       name,
 		Detail:     detail,
 		CategoryId: categoryId,
-		CreatedAt:  time.Now(),
+		CreatedAt:  time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt:  time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	return &newInput

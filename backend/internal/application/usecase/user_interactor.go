@@ -6,7 +6,6 @@ import (
 	"github.com/take0fit/knowledge-out/internal/application/dto"
 	"github.com/take0fit/knowledge-out/internal/domain/entity"
 	"github.com/take0fit/knowledge-out/internal/domain/repository"
-	"github.com/take0fit/knowledge-out/internal/domain/valueobject"
 )
 
 type UserUseCaseInteractor struct {
@@ -37,14 +36,12 @@ func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*dto.OutputUser, 
 	return dto.NewOutputUser(user), nil
 }
 
-func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input *dto.UserCreateInput) (*dto.OutputUser, error) {
-
-	userName, err := valueobject.NewUserNickname(input.Nickname)
+func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input *dto.InputCreateUser) (*dto.OutputUser, error) {
+	newUser, err := entity.NewUser(input.Nickname, input.Birthday)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, err
 	}
 
-	newUser := entity.NewUser(userName, input.Birthday)
 	err = u.userRepo.CreateUser(newUser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)

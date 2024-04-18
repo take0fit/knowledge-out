@@ -2,12 +2,13 @@
 #
 # https://gqlgen.com/getting-started/
 scalar DateTime
+scalar Date
 
 # User Types
 type User {
   id: ID!
   nickname: String!
-  birthday: DateTime
+  birthday: Date
   age: Int
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -53,18 +54,18 @@ type Output {
 type Query {
   users: [User!]!
   user(id: ID!): User
-  resources: [Resource!]!
+  resourcesByUserId(userId: ID!): [Resource!]!
   resource(id: ID!): Resource
-  inputs: [Input!]!
+  inputsByUserId(userId: ID!): [Input!]!
   input(id: ID!): Input
-  outputs: [Output!]!
+  outputsByUserId(userId: ID!): [Output!]!
   output(id: ID!): Output
 }
 
 type Mutation {
   createUser(
     nickname: String!,
-    birthday: DateTime
+    birthday: Date
   ): User!
 
   createResource(

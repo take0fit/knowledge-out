@@ -10,6 +10,8 @@ type OutputResource struct {
 	Name       string
 	Detail     *string
 	CategoryId int
+	CreatedAt  string
+	UpdatedAt  string
 }
 
 func NewOutputResource(resource *entity.Resource) *OutputResource {
@@ -19,6 +21,8 @@ func NewOutputResource(resource *entity.Resource) *OutputResource {
 		Name:       resource.Name,
 		Detail:     resource.Detail,
 		CategoryId: resource.CategoryId,
+		CreatedAt:  resource.CreatedAt,
+		UpdatedAt:  resource.UpdatedAt,
 	}
 }
 

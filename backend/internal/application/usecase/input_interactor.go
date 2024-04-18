@@ -27,7 +27,7 @@ func (u *InputUseCaseInteractor) GetInputDetail(inputId string) (*entity.Input, 
 	return inputModel, nil
 }
 
-func (u *InputUseCaseInteractor) CreateInput(ctx context.Context, input dto.InputCreateInput) (*entity.Input, error) {
+func (u *InputUseCaseInteractor) CreateInput(ctx context.Context, input *dto.InputCreateInput) (*entity.Input, error) {
 
 	inputModel := entity.NewInput(
 		input.UserId,

@@ -10,3 +10,7 @@ func NewUserNickname(nickname string) (NickName, error) {
 	}
 	return NickName(nickname), nil
 }
+
+func (n NickName) String() string {
+	return string(n)
+}

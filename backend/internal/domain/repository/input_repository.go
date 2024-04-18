@@ -5,7 +5,8 @@ import (
 )
 
 type InputRepository interface {
-	GetInputs(inputId string) ([]*entity.Input, error)
-	GetInputDetail(userId string) (*entity.Input, error)
-	CreateInput(*entity.Input) error
+	ListInputsByUserId(userId string) ([]*entity.Input, error)
+	ListInputsByUserIdAndCategoryId(userId string, categoryId int) ([]*entity.Input, error)
+	GetInputDetail(inputId string) (*entity.Input, error)
+	CreateInput(input *entity.Input) error
 }

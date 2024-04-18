@@ -86,4 +86,6 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
   DateTime:
-    model: github.com/take0fit/knowledge-out/interface/gql/model.DateTime
+    model:
+      - github.com/take0fit/knowledge-out/interface/gql/model.DateTime
+      - github.com/take0fit/knowledge-out/interface/gql/model.Date

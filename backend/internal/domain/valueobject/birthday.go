@@ -10,8 +10,15 @@ type Birthday struct {
 	Valid bool
 }
 
-func NewBirthday(t time.Time) Birthday {
-	return Birthday{Time: t}
+func NewBirthday(t *string) Birthday {
+	if t == nil {
+		return Birthday{Valid: false}
+	}
+	parsedTime, err := time.Parse("2006-01-02", *t)
+	if err != nil {
+		return Birthday{Valid: false}
+	}
+	return Birthday{Time: parsedTime, Valid: true}
 }
 
 func (b Birthday) Age() *int {
@@ -21,8 +28,18 @@ func (b Birthday) Age() *int {
 
 	now := time.Now()
 	years := now.Year() - b.Time.Year()
+
 	if util.IsBefore(b.Time, now) {
 		years--
 	}
+
 	return &years
+}
+
+func (b Birthday) String() *string {
+	if !b.Valid {
+		return nil
+	}
+	formatted := b.Time.Format("2006-01-02")
+	return &formatted
 }

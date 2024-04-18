@@ -27,7 +27,7 @@ func (u *OutputUseCaseInteractor) GetOutputDetail(outputId string) (*entity.Outp
 	return output, nil
 }
 
-func (u *OutputUseCaseInteractor) CreateOutput(ctx context.Context, input dto.OutputCreateInput) (*entity.Output, error) {
+func (u *OutputUseCaseInteractor) CreateOutput(ctx context.Context, input *dto.InputCreateOutput) (*entity.Output, error) {
 	outputModel := entity.NewOutput(
 		input.UserId,
 		input.InputIds,

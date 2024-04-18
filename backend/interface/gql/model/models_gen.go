@@ -55,7 +55,7 @@ type Resource struct {
 type User struct {
 	ID        string      `json:"id"`
 	Nickname  string      `json:"nickname"`
-	Birthday  *DateTime   `json:"birthday,omitempty"`
+	Birthday  *string     `json:"birthday,omitempty"`
 	Age       *int        `json:"age,omitempty"`
 	CreatedAt DateTime    `json:"createdAt"`
 	UpdatedAt DateTime    `json:"updatedAt"`

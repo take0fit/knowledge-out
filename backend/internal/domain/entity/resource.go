@@ -7,13 +7,13 @@ import (
 )
 
 type Resource struct {
-	Id         string
-	UserId     string
-	Name       string
-	Detail     *string
-	CategoryId int
-	CreatedAt  string
-	UpdatedAt  string
+	Id         string  `dynamodbav:"Id"`
+	UserId     string  `dynamodbav:"UserId"`
+	Name       string  `dynamodbav:"Name"`
+	Detail     *string `dynamodbav:"Detail,omitempty"`
+	CategoryId int     `dynamodbav:"CategoryId"`
+	CreatedAt  string  `dynamodbav:"CreatedAt"`
+	UpdatedAt  string  `dynamodbav:"UpdatedAt"`
 }
 
 func NewResource(

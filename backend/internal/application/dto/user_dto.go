@@ -6,18 +6,22 @@ import (
 )
 
 type OutputUser struct {
-	Id       string
-	Nickname string
-	Birthday *time.Time
-	Age      *int
+	Id        string
+	Nickname  string
+	Birthday  *time.Time
+	Age       *int
+	CreatedAt string
+	UpdatedAt string
 }
 
 func NewOutputUser(user *entity.User) *OutputUser {
 	return &OutputUser{
-		Id:       user.Id,
-		Nickname: string(user.Nickname),
-		Birthday: user.GetBirthday(),
-		Age:      user.Birthday.Age(),
+		Id:        user.Id,
+		Nickname:  string(user.Nickname),
+		Birthday:  user.GetBirthday(),
+		Age:       user.Birthday.Age(),
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 }
 
@@ -37,10 +41,10 @@ func NewOutputUsers(users []*entity.User) OutputUsers {
 
 type InputCreateUser struct {
 	Nickname string
-	Birthday time.Time
+	Birthday *string
 }
 
-func NewInputCreateUser(nickname string, birthday time.Time) *InputCreateUser {
+func NewInputCreateUser(nickname string, birthday *string) *InputCreateUser {
 	return &InputCreateUser{
 		Nickname: nickname,
 		Birthday: birthday,

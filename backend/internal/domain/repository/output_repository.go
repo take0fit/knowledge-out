@@ -5,7 +5,8 @@ import (
 )
 
 type OutputRepository interface {
-	GetOutputs(outputId string) ([]*entity.Output, error)
-	GetOutputDetail(userId string) (*entity.Output, error)
-	CreateOutput(*entity.Output) error
+	ListOutputsByUserId(userId string) ([]*entity.Output, error)
+	ListOutputsByUserIdAndCategoryId(userId string, categoryId int) ([]*entity.Output, error)
+	GetOutputDetail(outputId string) (*entity.Output, error)
+	CreateOutput(output *entity.Output) error
 }
