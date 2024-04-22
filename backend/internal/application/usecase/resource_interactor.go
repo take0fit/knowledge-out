@@ -43,3 +43,21 @@ func (u *ResourceUseCaseInteractor) CreateResource(ctx context.Context, input *d
 
 	return resourceModel, nil
 }
+
+func (u *ResourceUseCaseInteractor) GetResourceListByUserId(userId string) (dto.OutputResources, error) {
+	resources, err := u.resourceRepo.ListResourcesByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputResources(resources), nil
+}
+
+func (u *ResourceUseCaseInteractor) GetResourceDetails(resourceId string) (*dto.OutputResource, error) {
+	resource, err := u.resourceRepo.GetResourceDetail(resourceId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputResource(resource), nil
+}

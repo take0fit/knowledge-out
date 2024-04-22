@@ -24,6 +24,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, nickname string, birt
 	gqlUser := &model.User{
 		ID:       user.Id,
 		Nickname: user.Nickname,
+		Birthday: user.Birthday,
 		Age:      user.Age,
 	}
 
@@ -112,6 +113,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 			ID:       user.Id,
 			Nickname: user.Nickname,
 			Age:      user.Age,
+			Birthday: user.Birthday,
 		})
 	}
 
@@ -136,32 +138,161 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 
 // ResourcesByUserID is the resolver for the resourcesByUserId field.
 func (r *queryResolver) ResourcesByUserID(ctx context.Context, userID string) ([]*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: ResourcesByUserID - resourcesByUserId"))
+	resources, err := r.resourceUsecase.GetResourceListByUserId(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlResources []*model.Resource
+	for _, resource := range resources {
+		gqlResources = append(gqlResources, &model.Resource{
+			ID:                 resource.Id,
+			UserID:             resource.UserId,
+			ResourceName:       resource.Name,
+			ResourceDetail:     resource.Detail,
+			ResourceCategoryID: resource.CategoryId,
+			CreatedAt:          resource.CreatedAt,
+			UpdatedAt:          resource.UpdatedAt,
+			Inputs:             nil,
+		})
+	}
+
+	return gqlResources, err
 }
 
 // Resource is the resolver for the resource field.
 func (r *queryResolver) Resource(ctx context.Context, id string) (*model.Resource, error) {
-	panic(fmt.Errorf("not implemented: Resource - resource"))
+	resource, err := r.resourceUsecase.GetResourceDetails(id)
+	if err != nil {
+		return nil, err
+	}
+
+	gqlResource := &model.Resource{
+		ID:                 resource.Id,
+		UserID:             resource.UserId,
+		ResourceName:       resource.Name,
+		ResourceDetail:     resource.Detail,
+		ResourceCategoryID: resource.CategoryId,
+		CreatedAt:          resource.CreatedAt,
+		UpdatedAt:          resource.UpdatedAt,
+		Inputs:             nil,
+	}
+
+	return gqlResource, err
 }
 
 // InputsByUserID is the resolver for the inputsByUserId field.
 func (r *queryResolver) InputsByUserID(ctx context.Context, userID string) ([]*model.Input, error) {
-	panic(fmt.Errorf("not implemented: InputsByUserID - inputsByUserId"))
+	inputs, err := r.inputUsecase.GetInputListByUserId(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlInputs []*model.Input
+	for _, input := range inputs {
+		gqlInputs = append(gqlInputs, &model.Input{
+			ID:              input.Id,
+			UserID:          input.UserId,
+			ResourceID:      input.ResourceId,
+			InputName:       input.Name,
+			InputDetail:     input.Detail,
+			InputCategoryID: input.CategoryId,
+			CreatedAt:       input.CreatedAt,
+			UpdatedAt:       input.UpdatedAt,
+			Outputs:         nil,
+		})
+	}
+
+	return gqlInputs, err
 }
 
 // Input is the resolver for the input field.
 func (r *queryResolver) Input(ctx context.Context, id string) (*model.Input, error) {
-	panic(fmt.Errorf("not implemented: Input - input"))
+	input, err := r.inputUsecase.GetInputDetails(id)
+	if err != nil {
+		return nil, err
+	}
+
+	gqlInput := &model.Input{
+		ID:              input.Id,
+		UserID:          input.UserId,
+		ResourceID:      input.ResourceId,
+		InputName:       input.Name,
+		InputDetail:     input.Detail,
+		InputCategoryID: input.CategoryId,
+		CreatedAt:       input.CreatedAt,
+		UpdatedAt:       input.UpdatedAt,
+		Outputs:         nil,
+	}
+
+	return gqlInput, err
 }
 
 // OutputsByUserID is the resolver for the outputsByUserId field.
 func (r *queryResolver) OutputsByUserID(ctx context.Context, userID string) ([]*model.Output, error) {
-	panic(fmt.Errorf("not implemented: OutputsByUserID - outputsByUserId"))
+	outputs, err := r.outputUsecase.GetOutputListByUserId(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlOutputs []*model.Output
+	for _, output := range outputs {
+		gqlOutputs = append(gqlOutputs, &model.Output{
+			ID:               output.Id,
+			UserID:           output.UserId,
+			OutputName:       output.Name,
+			OutputDetail:     output.Detail,
+			OutputCategoryID: output.CategoryId,
+			CreatedAt:        output.CreatedAt,
+			UpdatedAt:        output.UpdatedAt,
+		})
+	}
+
+	return gqlOutputs, err
 }
 
 // Output is the resolver for the output field.
 func (r *queryResolver) Output(ctx context.Context, id string) (*model.Output, error) {
-	panic(fmt.Errorf("not implemented: Output - output"))
+	output, err := r.outputUsecase.GetOutputDetails(id)
+	if err != nil {
+		return nil, err
+	}
+
+	gqlOutput := &model.Output{
+		ID:               output.Id,
+		UserID:           output.UserId,
+		OutputName:       output.Name,
+		OutputDetail:     output.Detail,
+		OutputCategoryID: output.CategoryId,
+		CreatedAt:        output.CreatedAt,
+		UpdatedAt:        output.UpdatedAt,
+	}
+
+	return gqlOutput, err
+}
+
+// Resources is the resolver for the resources field.
+func (r *userResolver) Resources(ctx context.Context, obj *model.User) ([]*model.Resource, error) {
+	resources, err := r.resourceUsecase.GetResourceListByUserId(obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var gqlResources []*model.Resource
+	for _, resource := range resources {
+		gqlResources = append(gqlResources, &model.Resource{
+			ID:                 resource.Id,
+			UserID:             resource.UserId,
+			ResourceName:       resource.Name,
+			ResourceDetail:     resource.Detail,
+			ResourceCategoryID: resource.CategoryId,
+			CreatedAt:          resource.CreatedAt,
+			UpdatedAt:          resource.UpdatedAt,
+			Inputs:             nil,
+		})
+	}
+
+	return gqlResources, err
 }
 
 // Mutation returns generated.MutationResolver implementation.
@@ -170,8 +301,12 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have

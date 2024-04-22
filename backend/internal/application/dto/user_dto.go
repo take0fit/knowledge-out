@@ -2,13 +2,12 @@ package dto
 
 import (
 	"github.com/take0fit/knowledge-out/internal/domain/entity"
-	"time"
 )
 
 type OutputUser struct {
 	Id        string
 	Nickname  string
-	Birthday  *time.Time
+	Birthday  *string
 	Age       *int
 	CreatedAt string
 	UpdatedAt string
@@ -18,7 +17,7 @@ func NewOutputUser(user *entity.User) *OutputUser {
 	return &OutputUser{
 		Id:        user.Id,
 		Nickname:  string(user.Nickname),
-		Birthday:  user.GetBirthday(),
+		Birthday:  user.Birthday.String(),
 		Age:       user.Birthday.Age(),
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
@@ -31,8 +30,12 @@ func NewOutputUsers(users []*entity.User) OutputUsers {
 	outputUsers := make([]*OutputUser, len(users))
 	for i, user := range users {
 		outputUsers[i] = &OutputUser{
-			Id:       user.Id,
-			Nickname: string(user.Nickname),
+			Id:        user.Id,
+			Nickname:  string(user.Nickname),
+			Birthday:  user.Birthday.String(),
+			Age:       user.Birthday.Age(),
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
 		}
 	}
 

@@ -24,13 +24,14 @@ func NewDynamoResourceRepository(client *dynamodb.Client) repository.ResourceRep
 
 func (r *DynamoResourceRepository) ListResourcesByUserId(userId string) ([]*entity.Resource, error) {
 	gsiName := "DataTypeDataValueIndex"
-	partitionKeyName := "ResourceUserId#CategoryId"
+	dataType := "ResourceUserId#CategoryId"
 
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String("MyDataModel"),
 		IndexName:              aws.String(gsiName),
-		KeyConditionExpression: aws.String(partitionKeyName + " BEGINS_WITH :userIdPrefix"),
+		KeyConditionExpression: aws.String("DataType = :dataType and begins_with(DataValue, :userIdPrefix)"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":dataType":     &types.AttributeValueMemberS{Value: dataType},
 			":userIdPrefix": &types.AttributeValueMemberS{Value: userId + "#"},
 		},
 	}

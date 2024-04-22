@@ -24,13 +24,14 @@ func NewDynamoInputRepository(client *dynamodb.Client) repository.InputRepositor
 
 func (r *DynamoInputRepository) ListInputsByUserId(userId string) ([]*entity.Input, error) {
 	gsiName := "DataTypeDataValueIndex"
-	partitionKeyName := "InputUserId#CategoryId"
+	dataType := "InputUserId#CategoryId"
 
 	input := &dynamodb.QueryInput{
 		TableName:              aws.String("MyDataModel"),
 		IndexName:              aws.String(gsiName),
-		KeyConditionExpression: aws.String(partitionKeyName + " BEGINS_WITH :userIdPrefix"),
+		KeyConditionExpression: aws.String("DataType = :dataType and begins_with(DataValue, :userIdPrefix)"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":dataType":     &types.AttributeValueMemberS{Value: dataType},
 			":userIdPrefix": &types.AttributeValueMemberS{Value: userId + "#"},
 		},
 	}

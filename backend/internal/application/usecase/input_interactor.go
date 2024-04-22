@@ -44,3 +44,21 @@ func (u *InputUseCaseInteractor) CreateInput(ctx context.Context, input *dto.Inp
 
 	return inputModel, nil
 }
+
+func (u *InputUseCaseInteractor) GetInputListByUserId(userId string) (dto.OutputInputs, error) {
+	inputs, err := u.inputRepo.ListInputsByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputInputs(inputs), nil
+}
+
+func (u *InputUseCaseInteractor) GetInputDetails(inputId string) (*dto.OutputInput, error) {
+	input, err := u.inputRepo.GetInputDetail(inputId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputInput(input), nil
+}

@@ -43,3 +43,21 @@ func (u *OutputUseCaseInteractor) CreateOutput(ctx context.Context, input *dto.I
 
 	return outputModel, nil
 }
+
+func (u *OutputUseCaseInteractor) GetOutputListByUserId(userId string) (dto.OutputOutputs, error) {
+	outputs, err := u.outputRepo.ListOutputsByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputOutputs(outputs), nil
+}
+
+func (u *OutputUseCaseInteractor) GetOutputDetails(outputId string) (*dto.OutputOutput, error) {
+	output, err := u.outputRepo.GetOutputDetail(outputId)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewOutputOutput(output), nil
+}

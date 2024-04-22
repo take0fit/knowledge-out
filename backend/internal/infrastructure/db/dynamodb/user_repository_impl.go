@@ -22,6 +22,14 @@ func NewDynamoUserRepository(client *dynamodb.Client) repository.UserRepository 
 	}
 }
 
+type TempUser struct {
+	Id        string
+	Nickname  string
+	Birthday  string
+	CreatedAt string
+	UpdatedAt string
+}
+
 func (r *DynamoUserRepository) ListUsersSortedByCreatedAt(ascending bool) ([]*entity.User, error) {
 	gsiName := "DataTypeDataValueIndex"
 	dataType := "UserCreatedAt"
@@ -88,7 +96,7 @@ func (r *DynamoUserRepository) CreateUser(user *entity.User) error {
 		"Id":        &types.AttributeValueMemberS{Value: user.Id},
 		"DataType":  &types.AttributeValueMemberS{Value: dataType},
 		"DataValue": &types.AttributeValueMemberS{Value: user.CreatedAt},
-		"UserName":  &types.AttributeValueMemberS{Value: user.Nickname.String()},
+		"Nickname":  &types.AttributeValueMemberS{Value: user.Nickname.String()},
 		"Birthday":  &types.AttributeValueMemberS{Value: *user.Birthday.String()},
 		"CreatedAt": &types.AttributeValueMemberS{Value: user.CreatedAt},
 	}
@@ -105,28 +113,21 @@ func (r *DynamoUserRepository) CreateUser(user *entity.User) error {
 }
 
 func unmarshalUser(item map[string]types.AttributeValue) (*entity.User, error) {
+	var tempUser TempUser
+
+	if err := attributevalue.UnmarshalMap(item, &tempUser); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal User with all fields as primitive types: %w", err)
+	}
+
 	var user entity.User
+	user.Id = tempUser.Id
+	user.CreatedAt = tempUser.CreatedAt
+	user.UpdatedAt = tempUser.UpdatedAt
+	user.Nickname = valueobject.NickName(tempUser.Nickname)
 
-	// Id, CreatedAt, UpdatedAtはプリミティブなstringなので直接アンマーシャル
-	if err := attributevalue.UnmarshalMap(item, &user); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal User: %w", err)
-	}
-
-	if attr, exists := item["Nickname"]; exists {
-		if sVal, ok := attr.(*types.AttributeValueMemberS); ok {
-			user.Nickname = valueobject.NickName(sVal.Value)
-		} else {
-			return nil, fmt.Errorf("nickname is not a string")
-		}
-	}
-
-	if attr, exists := item["Birthday"]; exists {
-		if sVal, ok := attr.(*types.AttributeValueMemberS); ok {
-
-			user.Birthday = valueobject.NewBirthday(&sVal.Value)
-		} else {
-			return nil, fmt.Errorf("birthday is not a string")
-		}
+	if tempUser.Birthday != "" {
+		birthday := valueobject.NewBirthday(&tempUser.Birthday)
+		user.Birthday = birthday
 	}
 
 	return &user, nil

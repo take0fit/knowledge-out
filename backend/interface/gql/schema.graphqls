@@ -1,7 +1,6 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
-scalar DateTime
 scalar Date
 
 # User Types
@@ -10,8 +9,8 @@ type User {
   nickname: String!
   birthday: Date
   age: Int
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: String!
+  updatedAt: String!
   resources: [Resource!]!
 }
 
@@ -22,32 +21,34 @@ type Resource {
   resourceName: String!
   resourceDetail: String
   resourceCategoryId: Int!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: String!
+  updatedAt: String!
   inputs: [Input!]!
 }
 
 # Input Types
 type Input {
   id: ID!
+  userId: ID!
   resourceId: ID!
   inputName: String!
   inputDetail: String
   inputCategoryId: Int!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: String!
+  updatedAt: String!
   outputs: [Output!]!
 }
 
 # Output Types
 type Output {
   id: ID!
+  userId: ID!
   inputId: ID!
   outputName: String!
   outputDetail: String
   outputCategoryId: Int!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: String!
+  updatedAt: String!
 }
 
 # Query and Mutation

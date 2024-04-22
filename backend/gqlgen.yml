@@ -89,3 +89,7 @@ models:
     model:
       - github.com/take0fit/knowledge-out/interface/gql/model.DateTime
       - github.com/take0fit/knowledge-out/interface/gql/model.Date
+  User:
+    fields:
+      resources:
+        resolver: true

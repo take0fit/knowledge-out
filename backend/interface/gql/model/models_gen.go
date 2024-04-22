@@ -9,12 +9,13 @@ type Error struct {
 
 type Input struct {
 	ID              string    `json:"id"`
+	UserID          string    `json:"userId"`
 	ResourceID      string    `json:"resourceId"`
 	InputName       string    `json:"inputName"`
 	InputDetail     *string   `json:"inputDetail,omitempty"`
 	InputCategoryID int       `json:"inputCategoryId"`
-	CreatedAt       DateTime  `json:"createdAt"`
-	UpdatedAt       DateTime  `json:"updatedAt"`
+	CreatedAt       string    `json:"createdAt"`
+	UpdatedAt       string    `json:"updatedAt"`
 	Outputs         []*Output `json:"outputs"`
 }
 
@@ -22,13 +23,14 @@ type Mutation struct {
 }
 
 type Output struct {
-	ID               string   `json:"id"`
-	InputID          string   `json:"inputId"`
-	OutputName       string   `json:"outputName"`
-	OutputDetail     *string  `json:"outputDetail,omitempty"`
-	OutputCategoryID int      `json:"outputCategoryId"`
-	CreatedAt        DateTime `json:"createdAt"`
-	UpdatedAt        DateTime `json:"updatedAt"`
+	ID               string  `json:"id"`
+	UserID           string  `json:"userId"`
+	InputID          string  `json:"inputId"`
+	OutputName       string  `json:"outputName"`
+	OutputDetail     *string `json:"outputDetail,omitempty"`
+	OutputCategoryID int     `json:"outputCategoryId"`
+	CreatedAt        string  `json:"createdAt"`
+	UpdatedAt        string  `json:"updatedAt"`
 }
 
 type PageInfo struct {
@@ -47,8 +49,8 @@ type Resource struct {
 	ResourceName       string   `json:"resourceName"`
 	ResourceDetail     *string  `json:"resourceDetail,omitempty"`
 	ResourceCategoryID int      `json:"resourceCategoryId"`
-	CreatedAt          DateTime `json:"createdAt"`
-	UpdatedAt          DateTime `json:"updatedAt"`
+	CreatedAt          string   `json:"createdAt"`
+	UpdatedAt          string   `json:"updatedAt"`
 	Inputs             []*Input `json:"inputs"`
 }
 
@@ -57,7 +59,7 @@ type User struct {
 	Nickname  string      `json:"nickname"`
 	Birthday  *string     `json:"birthday,omitempty"`
 	Age       *int        `json:"age,omitempty"`
-	CreatedAt DateTime    `json:"createdAt"`
-	UpdatedAt DateTime    `json:"updatedAt"`
+	CreatedAt string      `json:"createdAt"`
+	UpdatedAt string      `json:"updatedAt"`
 	Resources []*Resource `json:"resources"`
 }

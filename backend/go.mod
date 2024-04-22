@@ -1,6 +1,6 @@
 module github.com/take0fit/knowledge-out
 
-go 1.20
+go 1.22
 
 require (
 	github.com/99designs/gqlgen v0.17.43
