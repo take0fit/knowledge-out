@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { urqlClient } from "@/src/libs/gql-requests";
 import styles from "../styles/Home.module.css";
+import {GetUsersDocument} from "@/src/graphql/generated.graphql";
 
 type Props = {
     users: {
@@ -26,7 +27,7 @@ const Home: NextPage<Props> = (props) => {
               <ul className={styles.grid}>
                   {props.users.map((user) => (
                       <li className={styles.content} key={user.id}>
-                          id: {user.id} name: {user.userName}
+                          id: {user.id} nickname: {user.nickname} age: {user.age}
                       </li>
                   ))}
               </ul>
@@ -51,16 +52,8 @@ const Home: NextPage<Props> = (props) => {
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
     try {
         const client = await urqlClient();
-        console.log(client)
-        const usersQuery = gql`
-            query {
-                users {
-                    id,
-                    nickname
-                }
-            }
-        `;
-        const result = await client.query(usersQuery, {}).toPromise();
+
+        const result = await client.query(GetUsersDocument, {}).toPromise();
         console.log(result)
         if (!result.data || !result.data.users) {
             console.error('No data returned from GraphQL query');
