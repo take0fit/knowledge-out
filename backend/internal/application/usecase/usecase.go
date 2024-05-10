@@ -4,6 +4,10 @@ import (
 	"github.com/take0fit/knowledge-out/interface/gql/model"
 )
 
+type AuthUsecase interface {
+	Authenticate(code string) (string, error)
+}
+
 type UserUsecase interface {
 	GetUserWithDetails(id string) (*model.User, error)
 	CreateUser() (*model.User, error)

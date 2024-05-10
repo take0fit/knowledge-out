@@ -37,7 +37,7 @@ func (u *UserUseCaseInteractor) GetUserDetails(userId string) (*dto.OutputUser, 
 }
 
 func (u *UserUseCaseInteractor) CreateUser(ctx context.Context, input *dto.InputCreateUser) (*dto.OutputUser, error) {
-	newUser, err := entity.NewUser(input.Nickname, input.Birthday)
+	newUser, err := entity.NewUser(input.Nickname, input.Birthday, nil)
 	if err != nil {
 		return nil, err
 	}
